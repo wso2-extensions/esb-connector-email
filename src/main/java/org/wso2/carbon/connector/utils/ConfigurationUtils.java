@@ -157,7 +157,7 @@ public final class ConfigurationUtils {
         String connectionName = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.NAME);
         String username = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.USERNAME);
         String password = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.PASSWORD);
-        String protocol = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.PROTOCOL);
+        String protocol = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.CONNECTION_TYPE);
         String readTimeout = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
                 EmailConstants.READ_TIMEOUT);
         String connectionTimeout = (String) ConnectorUtils.lookupTemplateParamater(messageContext,

@@ -33,7 +33,7 @@ public final class EmailConstants {
     public static final String ENCODING = "encoding";
     public static final String ATTACHMENTS = "attachments";
     public static final String CONTENT_TRANSFER_ENCODING = "contentTransferEncoding";
-    public static final String PROTOCOL = "protocol";
+    public static final String CONNECTION_TYPE = "connectionType";
     public static final String HOST = "host";
     public static final String PORT = "port";
     public static final String USERNAME = "username";
@@ -78,6 +78,7 @@ public final class EmailConstants {
     public static final String DEFAULT_SOCKETFACTORY_FALLBACK = "false";
     public static final String DEFAULT_FOLDER = "INBOX";
     public static final int DEFAULT_OFFSET = 0;
+    //TODO: Should this be infinite?
     public static final int DEFAULT_LIMIT = 10;
     public static final int DEFAULT_MAX_ACTIVE_CONNECTIONS = 4;
     public static final int DEFAULT_MAX_IDLE_CONNECTIONS = 2;

@@ -22,7 +22,7 @@
 	<parameter name="name" description="Unique name the connection is identified by"/>
 	<parameter name="username" description="Username used to connect with the mail server"/>
 	<parameter name="password" description="Password to connect with the mail server"/>
-	<parameter name="protocol" description="Email protocol that should be used to establish the connection with the server"/>
+	<parameter name="connectionType" description="Email connection type (protocol) that should be used to establish the connection with the server"/>
 	<parameter name="readTimeout" description="The socket read timeout value"/>
 	<parameter name="connectionTimeout" description="The socket connection timeout value"/>
 	<parameter name="writeTimeout" description="The socket write timeout value"/>
