@@ -73,11 +73,14 @@ public final class ContentBuilder {
             if (ContentTypes.TEXT_XML.equalsIgnoreCase(contentType)
                     || ContentTypes.APPLICATION_XML.equalsIgnoreCase(contentType)) {
                 setXMLContent(inputStream, axis2MessageContext);
+                ResponseHandler.handleSpecialProperties(ContentTypes.APPLICATION_XML, axis2MessageContext);
             } else if (ContentTypes.APPLICATION_JSON.equalsIgnoreCase(contentType)) {
                 setJSONPayload(inputStream, axis2MessageContext);
+                ResponseHandler.handleSpecialProperties(ContentTypes.APPLICATION_JSON, axis2MessageContext);
             } else if (ContentTypes.TEXT_PLAIN.equalsIgnoreCase(contentType)
                     || ContentTypes.TEXT_CSV.equalsIgnoreCase(contentType)) {
                 setTextContent(inputStream, axis2MessageContext);
+                ResponseHandler.handleSpecialProperties(ContentTypes.TEXT_PLAIN, axis2MessageContext);
             } else {
                 setBinaryContent(inputStream, axis2MessageContext);
             }
@@ -179,7 +182,7 @@ public final class ContentBuilder {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement textElement = factory.createOMElement(TEXT_ELEMENT);
         if (content == null) {
-            content = StringUtils.EMPTY ;
+            content = StringUtils.EMPTY;
         }
         textElement.setText(content);
         return textElement;

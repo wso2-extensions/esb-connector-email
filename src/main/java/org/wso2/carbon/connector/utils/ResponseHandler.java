@@ -29,8 +29,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 
 import java.util.Iterator;
@@ -51,6 +51,15 @@ public final class ResponseHandler {
     private static final QName ATTACHMENTS_ELEMENT = new QName("attachments");
     private static final QName ATTACHMENT_ELEMENT = new QName("attachment");
     private static final QName INDEX_ELEMENT = new QName("index");
+    private static final QName EMAIL_ID_ELEMENT = new QName("emailID");
+    private static final QName EMAIL_TO_ELEMENT = new QName("to");
+    private static final QName EMAIL_FROM_ELEMENT = new QName("from");
+    private static final QName EMAIL_CC_ELEMENT = new QName("cc");
+    private static final QName EMAIL_BCC_ELEMENT = new QName("bcc");
+    private static final QName EMAIL_REPLY_TO_ELEMENT = new QName("replyTo");
+    private static final QName EMAIL_SUBJECT_ELEMENT = new QName("subject");
+    private static final QName ATTACHMENT_CONTENT_TYPE = new QName("contentType");
+    private static final QName ATTACHMENT_NAME = new QName("name");
 
     // Response constants
     private static final String START_TAG = "<result><success>";
@@ -79,7 +88,7 @@ public final class ResponseHandler {
      * @param messageContext The message context that is processed
      * @param output         Output response
      */
-    public static void preparePayload(MessageContext messageContext, String output) throws ContentBuilderException {
+    private static void preparePayload(MessageContext messageContext, String output) throws ContentBuilderException {
 
         OMElement element;
         try {
@@ -115,22 +124,46 @@ public final class ResponseHandler {
         SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
         OMElement emailsElement = factory.createOMElement(EMAILS_ELEMENT);
         for (int i = 0; i < emailMessages.size(); i++) {
+            EmailMessage emailMessage = emailMessages.get(i);
             OMElement emailElement = factory.createOMElement(EMAIL_ELEMENT);
-            OMElement emailIndexElement = factory.createOMElement(INDEX_ELEMENT);
-            emailIndexElement.addChild(factory.createOMText(Integer.toString(i)));
-            emailElement.addChild(emailIndexElement);
+            addTextElement(factory, emailElement, INDEX_ELEMENT, Integer.toString(i));
+            addTextElement(factory, emailElement, EMAIL_ID_ELEMENT, emailMessage.getEmailId());
+            addTextElement(factory, emailElement, EMAIL_TO_ELEMENT, emailMessage.getTo());
+            addTextElement(factory, emailElement, EMAIL_FROM_ELEMENT, emailMessage.getFrom());
+            addTextElement(factory, emailElement, EMAIL_CC_ELEMENT, emailMessage.getCc());
+            addTextElement(factory, emailElement, EMAIL_BCC_ELEMENT, emailMessage.getBcc());
+            addTextElement(factory, emailElement, EMAIL_REPLY_TO_ELEMENT, emailMessage.getReplyTo());
+            addTextElement(factory, emailElement, EMAIL_SUBJECT_ELEMENT, emailMessage.getSubject());
             OMElement attachmentsElement = factory.createOMElement(ATTACHMENTS_ELEMENT);
-            for (int j = 0; j < emailMessages.get(i).getAttachments().size(); j++) {
+            for (int j = 0; j < emailMessage.getAttachments().size(); j++) {
+                Attachment attachment = emailMessage.getAttachments().get(j);
                 OMElement attachmentElement = factory.createOMElement(ATTACHMENT_ELEMENT);
-                OMElement attachmentIndexElement = factory.createOMElement(INDEX_ELEMENT);
-                attachmentIndexElement.addChild(factory.createOMText(Integer.toString(j)));
-                attachmentElement.addChild(attachmentIndexElement);
+                addTextElement(factory, attachmentElement, INDEX_ELEMENT, Integer.toString(j));
+                addTextElement(factory, attachmentElement, ATTACHMENT_NAME, attachment.getName());
+                addTextElement(factory, attachmentElement, ATTACHMENT_CONTENT_TYPE, attachment.getContentType());
                 attachmentsElement.addChild(attachmentElement);
             }
             emailElement.addChild(attachmentsElement);
             emailsElement.addChild(emailElement);
         }
         setPayloadInEnvelope(axis2MsgCtx, emailsElement);
+        handleSpecialProperties(ContentTypes.APPLICATION_XML, axis2MsgCtx);
+    }
+
+    /**
+     * Adds text element to parent OMElement
+     *
+     * @param factory SOAP factory to create element
+     * @param parent Parent OMElement
+     * @param qName QName of the new text element
+     * @param value Value of the new text element
+     */
+    private static void addTextElement(SOAPFactory factory, OMElement parent, QName qName, String value) {
+        if (value != null) {
+            OMElement newElement = factory.createOMElement(qName);
+            newElement.addChild(factory.createOMText(value));
+            parent.addChild(newElement);
+        }
     }
 
     /**
@@ -145,7 +178,6 @@ public final class ResponseHandler {
         JsonUtil.removeJsonPayload(axis2MsgCtx);
         try {
             axis2MsgCtx.setEnvelope(TransportUtils.createSOAPEnvelope(payload));
-
         } catch (AxisFault e) {
             throw new ContentBuilderException(format("Failed to set XML content. %s", e.getMessage()), e);
         }
@@ -159,7 +191,8 @@ public final class ResponseHandler {
      */
     public static void handleSpecialProperties(Object resultValue,
                                          org.apache.axis2.context.MessageContext axis2MessageCtx) {
-        axis2MessageCtx.setProperty(org.apache.axis2.Constants.Configuration.CONTENT_TYPE, resultValue);
+        axis2MessageCtx.setProperty(Constants.Configuration.MESSAGE_TYPE, resultValue);
+        axis2MessageCtx.setProperty(Constants.Configuration.CONTENT_TYPE, resultValue);
         Object o = axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
         Map headers = (Map) o;
         if (headers != null) {
