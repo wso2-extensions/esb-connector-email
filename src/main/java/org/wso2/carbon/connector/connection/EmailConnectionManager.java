@@ -23,9 +23,9 @@ import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailConnectionPoolException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.lang.String.format;
 
@@ -36,14 +36,16 @@ public class EmailConnectionManager {
 
     private static final Log log = LogFactory.getLog(EmailConnectionManager.class);
 
+    // Stores the connections used for SMTP against the connection name since no connection pooling is required for them
     private Map<String, EmailConnection> connectionMap;
+    // Stores the connection pool created for protocols IMAP and POP3 against the connection name
     private Map<String, EmailConnectionPool> connectionPoolMap;
 
     private static EmailConnectionManager manager;
 
     private EmailConnectionManager(){
-        this.connectionMap = Collections.synchronizedMap(new HashMap<>());
-        this.connectionPoolMap = Collections.synchronizedMap(new HashMap<>());
+        this.connectionMap = new ConcurrentHashMap<>(new HashMap<>());
+        this.connectionPoolMap = new ConcurrentHashMap<>(new HashMap<>());
     }
 
     /**

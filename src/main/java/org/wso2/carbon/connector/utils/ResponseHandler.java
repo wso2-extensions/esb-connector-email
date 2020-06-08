@@ -159,7 +159,7 @@ public final class ResponseHandler {
      * @param value Value of the new text element
      */
     private static void addTextElement(SOAPFactory factory, OMElement parent, QName qName, String value) {
-        if (value != null) {
+        if (!StringUtils.isEmpty(value)) {
             OMElement newElement = factory.createOMElement(qName);
             newElement.addChild(factory.createOMText(value));
             parent.addChild(newElement);
