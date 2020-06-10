@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.connector.pojo;
 
+import org.apache.commons.lang.StringUtils;
 import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.utils.EmailConstants;
@@ -46,8 +47,6 @@ public class ConnectionConfiguration {
     private long minEvictionTime;
     private long evictionCheckInterval;
     private String exhaustedAction;
-    private String initialisationPolicy;
-    private boolean disablePooling;
 
     public String getHost() {
 
@@ -55,7 +54,8 @@ public class ConnectionConfiguration {
     }
 
     public void setHost(String host) throws InvalidConfigurationException {
-        if (host == null){
+
+        if (StringUtils.isEmpty(host)) {
             throw new InvalidConfigurationException("Mandatory parameter 'host' is not set.");
         }
         this.host = host;
@@ -67,8 +67,11 @@ public class ConnectionConfiguration {
     }
 
     public void setPort(String port) throws InvalidConfigurationException {
-        if (port == null){
+
+        if (StringUtils.isEmpty(port)) {
             throw new InvalidConfigurationException("Mandatory parameter 'port' is not set.");
+        } else if (!StringUtils.isNumeric(port)) {
+            throw new InvalidConfigurationException("Parameter 'port' must be a numeric value.");
         }
         this.port = port;
     }
@@ -79,7 +82,8 @@ public class ConnectionConfiguration {
     }
 
     public void setConnectionName(String connectionName) throws InvalidConfigurationException {
-        if (connectionName == null){
+
+        if (StringUtils.isNumeric(connectionName)) {
             throw new InvalidConfigurationException("Mandatory parameter 'connectionName' is not set.");
         }
         this.connectionName = connectionName;
@@ -92,7 +96,7 @@ public class ConnectionConfiguration {
 
     public void setUsername(String username) throws InvalidConfigurationException {
 
-        if (username == null){
+        if (StringUtils.isEmpty(username)) {
             throw new InvalidConfigurationException("Mandatory parameter 'username' is not set.");
         }
         this.username = username;
@@ -105,7 +109,7 @@ public class ConnectionConfiguration {
 
     public void setPassword(String password) throws InvalidConfigurationException {
 
-        if (password == null){
+        if (StringUtils.isEmpty(password)) {
             throw new InvalidConfigurationException("Mandatory parameter 'password' is not set.");
         }
         this.password = password;
@@ -118,7 +122,7 @@ public class ConnectionConfiguration {
 
     public void setProtocol(EmailProtocol protocol) throws InvalidConfigurationException {
 
-        if (protocol == null){
+        if (protocol == null) {
             throw new InvalidConfigurationException("Mandatory parameter 'protocol' is not set.");
         }
         this.protocol = protocol;
@@ -129,8 +133,11 @@ public class ConnectionConfiguration {
         return readTimeout;
     }
 
-    public void setReadTimeout(String readTimeout) {
+    public void setReadTimeout(String readTimeout) throws InvalidConfigurationException {
 
+        if (readTimeout != null && !StringUtils.isNumeric(readTimeout)) {
+            throw new InvalidConfigurationException("Parameter 'read timeout' must be a numeric value.");
+        }
         this.readTimeout = readTimeout;
     }
 
@@ -139,8 +146,11 @@ public class ConnectionConfiguration {
         return connectionTimeout;
     }
 
-    public void setConnectionTimeout(String connectionTimeout) {
+    public void setConnectionTimeout(String connectionTimeout) throws InvalidConfigurationException {
 
+        if (connectionTimeout != null && !StringUtils.isNumeric(connectionTimeout)) {
+            throw new InvalidConfigurationException("Parameter 'connection timeout' must be a numeric value.");
+        }
         this.connectionTimeout = connectionTimeout;
     }
 
@@ -149,8 +159,11 @@ public class ConnectionConfiguration {
         return writeTimeout;
     }
 
-    public void setWriteTimeout(String writeTimeout) {
+    public void setWriteTimeout(String writeTimeout) throws InvalidConfigurationException {
 
+        if (writeTimeout != null && !StringUtils.isNumeric(writeTimeout)) {
+            throw new InvalidConfigurationException("Parameter 'write timeout' must be a numeric value.");
+        }
         this.writeTimeout = writeTimeout;
     }
 
@@ -179,8 +192,11 @@ public class ConnectionConfiguration {
         return trustedHosts;
     }
 
-    public void setTrustedHosts(String trustedHosts) {
+    public void setTrustedHosts(String trustedHosts) throws InvalidConfigurationException {
 
+        if (trustedHosts != null && trustedHosts.isEmpty()) {
+            throw new InvalidConfigurationException("Parameter 'trusted hosts' cannot be empty.");
+        }
         this.trustedHosts = trustedHosts;
     }
 
@@ -189,8 +205,11 @@ public class ConnectionConfiguration {
         return sslProtocols;
     }
 
-    public void setSslProtocols(String sslProtocols) {
+    public void setSslProtocols(String sslProtocols) throws InvalidConfigurationException {
 
+        if (sslProtocols != null && sslProtocols.isEmpty()) {
+            throw new InvalidConfigurationException("Parameter 'ssl protocols' cannot be empty.");
+        }
         this.sslProtocols = sslProtocols;
     }
 
@@ -199,15 +218,16 @@ public class ConnectionConfiguration {
         return cipherSuites;
     }
 
-    public void setCipherSuites(String cipherSuites) {
+    public void setCipherSuites(String cipherSuites) throws InvalidConfigurationException {
 
+        if (cipherSuites != null && cipherSuites.isEmpty()) {
+            throw new InvalidConfigurationException("Parameter 'cipher suites' cannot be empty.");
+        }
         this.cipherSuites = cipherSuites;
     }
 
     public int getMaxActiveConnections() {
-        if (this.maxActiveConnections == 0){
-            this.maxActiveConnections = EmailConstants.DEFAULT_MAX_ACTIVE_CONNECTIONS;
-        }
+
         return maxActiveConnections;
     }
 
@@ -217,9 +237,7 @@ public class ConnectionConfiguration {
     }
 
     public int getMaxIdleConnections() {
-        if (this.maxIdleConnections == 0){
-            this.maxIdleConnections = EmailConstants.DEFAULT_MAX_IDLE_CONNECTIONS;
-        }
+
         return maxIdleConnections;
     }
 
@@ -268,23 +286,4 @@ public class ConnectionConfiguration {
         this.exhaustedAction = exhaustedAction;
     }
 
-    public String getInitialisationPolicy() {
-
-        return initialisationPolicy;
-    }
-
-    public void setInitialisationPolicy(String initialisationPolicy) {
-
-        this.initialisationPolicy = initialisationPolicy;
-    }
-
-    public boolean getDisablePooling() {
-
-        return disablePooling;
-    }
-
-    public void setDisablePooling(boolean disablePooling) {
-
-        this.disablePooling = disablePooling;
-    }
 }

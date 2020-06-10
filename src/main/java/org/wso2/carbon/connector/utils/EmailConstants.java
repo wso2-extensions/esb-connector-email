@@ -17,6 +17,9 @@
  */
 package org.wso2.carbon.connector.utils;
 
+/**
+ * Contains constants used for email operations
+ */
 public final class EmailConstants {
 
     // Template Parameters
@@ -27,7 +30,6 @@ public final class EmailConstants {
     public static final String BCC = "bcc";
     public static final String REPLY_TO = "replyTo";
     public static final String SUBJECT = "subject";
-    public static final String HEADERS = "headers";
     public static final String CONTENT = "content";
     public static final String CONTENT_TYPE = "contentType";
     public static final String ENCODING = "encoding";
@@ -66,22 +68,11 @@ public final class EmailConstants {
     public static final String MAX_EVICTION_TIME = "minEvictionTime";
     public static final String EVICTION_CHECK_INTERVAL = "evictionCheckInterval";
     public static final String EXHAUSTED_ACTION = "exhaustedAction";
-    public static final String INITIALISATION_POLICY = "initialisationPolicy";
-    public static final String DISABLE_POOLING = "disablePooling";
-    //Java Mail API Constants
-    public static final String CONTENT_TRANSFER_ENCODING_HEADER = "Content-Transfer-Encoding";
-    // Default configuration values
-    public static final String DEFAULT_CONTENT_TYPE = "text/html";
-    public static final String DEFAULT_ENCODING = "UTF-8";
-    public static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "Base64";
-    public static final String DEFAULT_SOCKETFACTORY_CLASS = "javax.net.ssl.SSLSocketFactory";
+    // Default email configuration values
     public static final String DEFAULT_SOCKETFACTORY_FALLBACK = "false";
     public static final String DEFAULT_FOLDER = "INBOX";
     public static final int DEFAULT_OFFSET = 0;
-    //TODO: Should this be infinite?
-    public static final int DEFAULT_LIMIT = 10;
-    public static final int DEFAULT_MAX_ACTIVE_CONNECTIONS = 4;
-    public static final int DEFAULT_MAX_IDLE_CONNECTIONS = 2;
+    public static final int DEFAULT_LIMIT = -1;
     // Flags
     public static final String FLAG_SEEN = "seen";
     public static final String FLAG_ANSWERED = "answered";

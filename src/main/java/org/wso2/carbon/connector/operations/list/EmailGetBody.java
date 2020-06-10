@@ -22,10 +22,9 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 import org.wso2.carbon.connector.utils.EmailConstants;
-import org.wso2.carbon.connector.utils.EmailOperationUtils;
-import org.wso2.carbon.connector.utils.EmailPropertyNames;
+import org.wso2.carbon.connector.utils.EmailUtils;
+import org.wso2.carbon.connector.utils.ResponseConstants;
 import org.wso2.carbon.connector.utils.Error;
-import org.wso2.carbon.connector.utils.ResponseHandler;
 
 import java.util.List;
 
@@ -43,28 +42,26 @@ public class EmailGetBody extends AbstractConnector {
 
         String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
         List<EmailMessage> emailMessages = (List<EmailMessage>) messageContext
-                .getProperty(EmailPropertyNames.PROPERTY_EMAILS);
+                .getProperty(ResponseConstants.PROPERTY_EMAILS);
 
         try {
             if (emailIndex != null && emailMessages != null) {
-                EmailMessage emailMessage = EmailOperationUtils.getEmail(emailMessages, emailIndex);
-                if (emailMessage != null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(format("Retrieving email body for email at index %s...", emailIndex));
-                    }
-                    setProperties(messageContext, emailMessage);
+                EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
+                if (log.isDebugEnabled()) {
+                    log.debug(format("Retrieving email body for email at index %s...", emailIndex));
                 }
+                setProperties(messageContext, emailMessage);
             } else if (emailIndex == null) {
-                ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+                EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
                 handleException(format("%s Email Index is not set.", ERROR), messageContext);
             } else {
-                ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+                EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
                 handleException(format("%s No emails retrieved. " +
                         "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
             }
         } catch (InvalidConfigurationException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(ERROR + " " + e.getMessage(), e, messageContext);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            handleException(ERROR, e, messageContext);
         }
     }
 
@@ -76,14 +73,14 @@ public class EmailGetBody extends AbstractConnector {
      */
     private void setProperties(MessageContext messageContext, EmailMessage emailMessage) {
 
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_ID, emailMessage.getEmailId());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_TO, emailMessage.getTo());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_FROM, emailMessage.getFrom());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_CC, emailMessage.getCc());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_BCC, emailMessage.getBcc());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_SUBJECT, emailMessage.getSubject());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_EMAIL_REPLY_TO, emailMessage.getReplyTo());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_HTML_CONTENT, emailMessage.getHtmlContent());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_TEXT_CONTENT, emailMessage.getTextContent());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_ID, emailMessage.getEmailId());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_TO, emailMessage.getTo());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_FROM, emailMessage.getFrom());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_CC, emailMessage.getCc());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_BCC, emailMessage.getBcc());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_SUBJECT, emailMessage.getSubject());
+        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_REPLY_TO, emailMessage.getReplyTo());
+        messageContext.setProperty(ResponseConstants.PROPERTY_HTML_CONTENT, emailMessage.getHtmlContent());
+        messageContext.setProperty(ResponseConstants.PROPERTY_TEXT_CONTENT, emailMessage.getTextContent());
     }
 }

@@ -23,12 +23,11 @@ import org.wso2.carbon.connector.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
-import org.wso2.carbon.connector.utils.ContentBuilder;
-import org.wso2.carbon.connector.utils.EmailConstants;
-import org.wso2.carbon.connector.utils.EmailOperationUtils;
-import org.wso2.carbon.connector.utils.EmailPropertyNames;
-import org.wso2.carbon.connector.utils.Error;
 import org.wso2.carbon.connector.utils.ResponseHandler;
+import org.wso2.carbon.connector.utils.EmailConstants;
+import org.wso2.carbon.connector.utils.EmailUtils;
+import org.wso2.carbon.connector.utils.ResponseConstants;
+import org.wso2.carbon.connector.utils.Error;
 
 import java.util.List;
 
@@ -47,18 +46,18 @@ public class EmailGetAttachment extends AbstractConnector {
         String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
         String attachmentIndex = (String) getParameter(messageContext, EmailConstants.ATTACHMENT_INDEX);
         List<EmailMessage> emailMessages = (List<EmailMessage>) messageContext
-                .getProperty(EmailPropertyNames.PROPERTY_EMAILS);
+                .getProperty(ResponseConstants.PROPERTY_EMAILS);
 
         if (emailIndex != null && attachmentIndex != null && emailMessages != null) {
             setAttachment(messageContext, emailIndex, attachmentIndex, emailMessages);
         } else if (emailIndex == null) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException(format("%s Email Index is not set.", ERROR), messageContext);
         } else if (attachmentIndex == null) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException(format("%s Attachment Index is not set.", ERROR), messageContext);
         } else {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException(format("%s No emails retrieved. " +
                     "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
         }
@@ -80,20 +79,15 @@ public class EmailGetAttachment extends AbstractConnector {
                     emailIndex, attachmentIndex));
         }
         try {
-            EmailMessage emailMessage = EmailOperationUtils.getEmail(emailMessages, emailIndex);
-            if (emailMessage != null) {
-                Attachment attachment = EmailOperationUtils.getEmailAttachment(emailMessage, attachmentIndex);
-                if (attachment != null) {
-                    setProperties(messageContext, attachment);
-                    ContentBuilder.buildContent(messageContext, attachment.getContent(),
-                            attachment.getContentType());
-                }
-            }
+            EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
+            Attachment attachment = EmailUtils.getEmailAttachment(emailMessage, attachmentIndex);
+            setProperties(messageContext, attachment);
+            ResponseHandler.setContent(messageContext, attachment.getContent(), attachment.getContentType());
         } catch (InvalidConfigurationException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(ERROR + " " + e.getMessage(), e, messageContext);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            handleException(ERROR, e, messageContext);
         } catch (ContentBuilderException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
             handleException("Error occurred during setting attachment content.", e, messageContext);
         }
     }
@@ -106,7 +100,7 @@ public class EmailGetAttachment extends AbstractConnector {
      */
     private void setProperties(MessageContext messageContext, Attachment attachment) {
 
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_ATTACHMENT_TYPE, attachment.getContentType());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_ATTACHMENT_NAME, attachment.getName());
+        messageContext.setProperty(ResponseConstants.PROPERTY_ATTACHMENT_TYPE, attachment.getContentType());
+        messageContext.setProperty(ResponseConstants.PROPERTY_ATTACHMENT_NAME, attachment.getName());
     }
 }

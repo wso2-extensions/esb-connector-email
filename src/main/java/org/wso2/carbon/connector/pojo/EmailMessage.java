@@ -17,9 +17,15 @@
  */
 package org.wso2.carbon.connector.pojo;
 
+import org.apache.commons.mail.util.MimeMessageParser;
+import org.wso2.carbon.connector.exception.EmailParsingException;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.activation.DataSource;
 import javax.mail.Address;
+import javax.mail.internet.MimeMessage;
 
 /**
  * Contains the parsed email content
@@ -36,6 +42,36 @@ public class EmailMessage {
     private String htmlContent;
     private String textContent;
     private List<Attachment> attachments;
+
+    public EmailMessage() {
+
+    }
+
+    public EmailMessage(MimeMessage message) throws EmailParsingException {
+        MimeMessageParser parser = new MimeMessageParser(message);
+        try {
+            parser.parse();
+            this.textContent = parser.getPlainContent();
+            this.htmlContent = parser.getHtmlContent();
+            this.emailId = parser.getMimeMessage().getMessageID();
+            this.to = getAddressListAsString(parser.getTo());
+            this.from = parser.getFrom();
+            this.cc = getAddressListAsString(parser.getCc());
+            this.bcc = getAddressListAsString(parser.getBcc());
+            this.subject = parser.getSubject();
+            this.replyTo = parser.getReplyTo();
+            List<DataSource> dataSources = parser.getAttachmentList();
+            if (!dataSources.isEmpty()) {
+                attachments = new ArrayList<>();
+            }
+            for (DataSource dataSource : dataSources) {
+                Attachment attachment = new Attachment(dataSource);
+                this.attachments.add(attachment);
+            }
+        } catch (Exception e) {
+            throw new EmailParsingException("Error occurred while retrieving message data.", e);
+        }
+    }
 
     public String getHtmlContent() {
 

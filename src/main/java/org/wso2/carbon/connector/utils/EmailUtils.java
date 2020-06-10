@@ -20,7 +20,10 @@ package org.wso2.carbon.connector.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
+import org.wso2.carbon.connector.core.util.ConnectorUtils;
+import org.wso2.carbon.connector.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
@@ -40,13 +43,15 @@ import static java.lang.String.format;
 /**
  * Utilities for manipulating emails
  */
-public final class EmailOperationUtils {
+public final class EmailUtils {
 
-    private static final String DELETED = "DELETED";
-    private static final String SEEN = "SEEN";
-    private static final Log log = LogFactory.getLog(EmailOperationUtils.class);
+    private static final Log log = LogFactory.getLog(EmailUtils.class);
 
-    private EmailOperationUtils() {
+    // Response constants
+    private static final String START_TAG = "<result><success>";
+    private static final String END_TAG = "</success></result>";
+
+    private EmailUtils() {
 
     }
 
@@ -93,8 +98,7 @@ public final class EmailOperationUtils {
             }
             connection.closeFolder(expunge);
         } catch (MessagingException e) {
-            throw new EmailConnectionException(format("Error occurred while changing email state. %s ",
-                    e.getMessage()), e);
+            throw new EmailConnectionException("Error occurred while changing email state.", e);
         }
         return success;
     }
@@ -109,10 +113,10 @@ public final class EmailOperationUtils {
 
         String flagName = "";
         if (flag == Flags.Flag.DELETED) {
-            flagName = DELETED;
+            flagName = EmailConstants.FLAG_DELETED;
         }
         if (flag == Flags.Flag.SEEN) {
-            flagName = SEEN;
+            flagName = EmailConstants.FLAG_SEEN;
         }
         return flagName;
     }
@@ -154,5 +158,49 @@ public final class EmailOperationUtils {
                     "Invalid index set for attachment index.", e);
         }
         return attachment;
+    }
+
+    /**
+     * Retrieves connection name from message context if configured as configKey attribute
+     * or from the template parameter
+     *
+     * @param messageContext Message Context from which the parameters should be extracted from
+     * @return connection name
+     */
+    public static String getConnectionName(MessageContext messageContext) throws InvalidConfigurationException {
+        // Retrieve name configured init template if referred to as the configKey attribute
+        String connectionName = (String) messageContext.getProperty(EmailConstants.NAME);
+        if (connectionName == null) {
+            connectionName = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.CONNECTION);
+            if (connectionName == null) {
+                throw new InvalidConfigurationException("Connection name is not set.");
+            }
+        }
+        return connectionName;
+    }
+
+    /**
+     * Generates the output payload with result status
+     *
+     * @param messageContext The message context that is processed
+     * @param resultStatus   Result of the status
+     */
+    public static void generateOutput(MessageContext messageContext, boolean resultStatus)
+            throws ContentBuilderException {
+
+        String response = START_TAG + resultStatus + END_TAG;
+        ResponseHandler.preparePayload(messageContext, response);
+    }
+
+    /**
+     * Sets the error code and error detail in message
+     *
+     * @param messageContext Message Context
+     * @param error          Error to be set
+     */
+    public static void setErrorsInMessage(MessageContext messageContext, Error error) {
+
+        messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_CODE, error.getErrorCode());
+        messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_MESSAGE, error.getErrorDetail());
     }
 }

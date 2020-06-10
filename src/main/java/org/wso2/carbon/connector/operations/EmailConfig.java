@@ -21,14 +21,14 @@ import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.wso2.carbon.connector.connection.EmailConnectionManager;
+import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
-import org.wso2.carbon.connector.utils.ConfigurationUtils;
+import org.wso2.carbon.connector.utils.EmailUtils;
+import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.Error;
-import org.wso2.carbon.connector.utils.ResponseHandler;
-
-import static java.lang.String.format;
 
 /**
  * Configures and initializes the email connection
@@ -39,11 +39,11 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
     public void connect(MessageContext messageContext) {
 
         try {
-            ConnectionConfiguration configuration = ConfigurationUtils.getConnectionConfigFromContext(messageContext);
+            ConnectionConfiguration configuration = getConnectionConfigFromContext(messageContext);
             EmailConnectionManager.getEmailConnectionManager().createConnection(configuration);
         } catch (InvalidConfigurationException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(format("Failed to initiate email configuration. %s", e.getMessage()), messageContext);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            handleException("Failed to initiate email configuration.", e, messageContext);
         }
     }
 
@@ -55,6 +55,88 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
     @Override
     public void destroy() {
 
-        EmailConnectionManager.getEmailConnectionManager().clearConnectionPools();
+        EmailConnectionManager.getEmailConnectionManager().shutdownConnectionPools();
+    }
+
+    /**
+     * Extracts connection configuration parameters from operation template
+     *
+     * @param messageContext Message Context from which the parameters should be extracted from
+     * @return Connection Configurations set
+     * @throws InvalidConfigurationException if the configurations contain invalid inputs
+     */
+    private ConnectionConfiguration getConnectionConfigFromContext(MessageContext messageContext)
+            throws InvalidConfigurationException {
+
+        String host = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.HOST);
+        String port = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.PORT);
+        String connectionName = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.NAME);
+        String username = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.USERNAME);
+        String password = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.PASSWORD);
+        String protocol = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.CONNECTION_TYPE);
+        String readTimeout = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.READ_TIMEOUT);
+        String connectionTimeout = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.CONNECTION_TIMEOUT);
+        String writeTimeout = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.WRITE_TIMEOUT);
+        String requireTLS = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.REQUIRE_TLS);
+        String checkServerIdentity = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.CHECK_SERVER_IDENTITY);
+        String trustedHosts = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.TRUSTED_HOSTS);
+        String sslProtocols = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.SSL_PROTOCOLS);
+        String cipherSuites = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.CIPHER_SUITES);
+        String maxActiveConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.MAX_ACTIVE_CONNECTIONS);
+        String maxIdleConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.MAX_IDLE_CONNECTIONS);
+        String maxWaitTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.MAX_WAIT_TIME);
+        String minEvictionTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.MAX_EVICTION_TIME);
+        String evictionCheckInterval = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.EVICTION_CHECK_INTERVAL);
+        String exhaustedAction = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.EXHAUSTED_ACTION);
+
+        ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
+        connectionConfiguration.setHost(host);
+        connectionConfiguration.setPort(port);
+        connectionConfiguration.setConnectionName(connectionName);
+        connectionConfiguration.setPassword(password);
+        connectionConfiguration.setProtocol(EmailProtocol.valueOf(protocol));
+        connectionConfiguration.setReadTimeout(readTimeout);
+        connectionConfiguration.setWriteTimeout(writeTimeout);
+        connectionConfiguration.setConnectionTimeout(connectionTimeout);
+        connectionConfiguration.setRequireTLS(Boolean.parseBoolean(requireTLS));
+        connectionConfiguration.setUsername(username);
+        connectionConfiguration.setCheckServerIdentity(Boolean.parseBoolean(checkServerIdentity));
+        connectionConfiguration.setTrustedHosts(trustedHosts);
+        connectionConfiguration.setSslProtocols(sslProtocols);
+        connectionConfiguration.setCipherSuites(cipherSuites);
+
+        if (maxActiveConnections != null) {
+            connectionConfiguration.setMaxActiveConnections(Integer.parseInt(maxActiveConnections));
+        }
+        if (maxWaitTime != null) {
+            connectionConfiguration.setMaxWaitTime(Long.parseLong(maxWaitTime));
+        }
+        if (maxIdleConnections != null) {
+            connectionConfiguration.setMaxIdleConnections(Integer.parseInt(maxIdleConnections));
+        }
+        if (minEvictionTime != null) {
+            connectionConfiguration.setMinEvictionTime(Long.parseLong(minEvictionTime));
+        }
+        if (evictionCheckInterval != null) {
+            connectionConfiguration.setEvictionCheckInterval(Long.parseLong(evictionCheckInterval));
+        }
+        if (exhaustedAction != null) {
+            connectionConfiguration.setExhaustedAction(exhaustedAction);
+        }
+
+        return connectionConfiguration;
     }
 }

@@ -19,178 +19,93 @@ package org.wso2.carbon.connector.utils;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.util.AXIOMUtil;
-import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.transport.TransportUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
+import org.apache.synapse.core.axis2.Axis2MessageContext;
+import org.apache.synapse.transport.passthru.util.RelayConstants;
+import org.apache.synapse.transport.passthru.util.StreamingOnRequestDataSource;
 import org.wso2.carbon.connector.exception.ContentBuilderException;
-import org.wso2.carbon.connector.pojo.Attachment;
-import org.wso2.carbon.connector.pojo.EmailMessage;
 
-import java.util.Iterator;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 
-import static java.lang.String.format;
-
 /**
- * Generates responses
+ * Utils for setting content as the message payload in the message context
  */
 public final class ResponseHandler {
 
-    private static final QName EMAILS_ELEMENT = new QName("emails");
-    private static final QName EMAIL_ELEMENT = new QName("email");
-    private static final QName ATTACHMENTS_ELEMENT = new QName("attachments");
-    private static final QName ATTACHMENT_ELEMENT = new QName("attachment");
-    private static final QName INDEX_ELEMENT = new QName("index");
-    private static final QName EMAIL_ID_ELEMENT = new QName("emailID");
-    private static final QName EMAIL_TO_ELEMENT = new QName("to");
-    private static final QName EMAIL_FROM_ELEMENT = new QName("from");
-    private static final QName EMAIL_CC_ELEMENT = new QName("cc");
-    private static final QName EMAIL_BCC_ELEMENT = new QName("bcc");
-    private static final QName EMAIL_REPLY_TO_ELEMENT = new QName("replyTo");
-    private static final QName EMAIL_SUBJECT_ELEMENT = new QName("subject");
-    private static final QName ATTACHMENT_CONTENT_TYPE = new QName("contentType");
-    private static final QName ATTACHMENT_NAME = new QName("name");
+    // Content Types
+    private static final String APPLICATION_XML = "application/xml";
+    private static final String APPLICATION_JSON = "application/json";
+    private static final String TEXT_XML = "text/xml";
+    private static final String TEXT_CSV = "text/csv";
+    private static final String TEXT_PLAIN = "text/plain";
 
-    // Response constants
-    private static final String START_TAG = "<result><success>";
-    private static final String END_TAG = "</success></result>";
+    private static final QName TEXT_ELEMENT = new QName("http://ws.apache.org/commons/ns/payload",
+            "text");
 
     private ResponseHandler() {
 
     }
 
     /**
-     * Generates the output payload with result status
+     * Builds content according to the content type and set in the message body
      *
-     * @param messageContext The message context that is processed
-     * @param resultStatus   Result of the status
+     * @param messageContext Current message content
+     * @param inputStream    Content to be built as an input stream
+     * @param contentType    Content Type of the content
+     * @throws ContentBuilderException if failed to build the content
      */
-    public static void generateOutput(MessageContext messageContext, boolean resultStatus)
+    public static void setContent(MessageContext messageContext, InputStream inputStream, String contentType)
             throws ContentBuilderException {
 
-        String response = START_TAG + resultStatus + END_TAG;
-        ResponseHandler.preparePayload(messageContext, response);
-    }
-
-    /**
-     * Sets payload in body
-     *
-     * @param messageContext The message context that is processed
-     * @param output         Output response
-     */
-    private static void preparePayload(MessageContext messageContext, String output) throws ContentBuilderException {
-
-        OMElement element;
+        org.apache.axis2.context.MessageContext axis2MessageContext = ((Axis2MessageContext) messageContext)
+                .getAxis2MessageContext();
         try {
-            if (StringUtils.isNotEmpty(output)) {
-                element = AXIOMUtil.stringToOM(output);
+            if (TEXT_XML.equalsIgnoreCase(contentType)
+                    || APPLICATION_XML.equalsIgnoreCase(contentType)) {
+                setXMLContent(inputStream, axis2MessageContext);
+                handleSpecialProperties(APPLICATION_XML, axis2MessageContext);
+            } else if (APPLICATION_JSON.equalsIgnoreCase(contentType)) {
+                setJSONPayload(inputStream, axis2MessageContext);
+                handleSpecialProperties(APPLICATION_JSON, axis2MessageContext);
+            } else if (TEXT_PLAIN.equalsIgnoreCase(contentType)
+                    || TEXT_CSV.equalsIgnoreCase(contentType)) {
+                setTextContent(inputStream, axis2MessageContext);
+                handleSpecialProperties(TEXT_PLAIN, axis2MessageContext);
             } else {
-                element = AXIOMUtil.stringToOM("<result></></result>");
+                setBinaryContent(inputStream, axis2MessageContext);
             }
-            SOAPBody soapBody = messageContext.getEnvelope().getBody();
-            for (Iterator itr = soapBody.getChildElements(); itr.hasNext(); ) {
-                OMElement child = (OMElement) itr.next();
-                child.detach();
-            }
-            soapBody.addChild(element);
-            messageContext.setResponse(true);
-        } catch (XMLStreamException e) {
-            throw new ContentBuilderException(format("Failed to set response in payload. %s", e.getMessage()), e);
-        }
-    }
-
-    /**
-     * Sets email response in body
-     *
-     * @param emailMessages  List of emails
-     * @param messageContext The message context that is processed
-     */
-    public static void setEmailListResponse(List<EmailMessage> emailMessages, MessageContext messageContext)
-            throws ContentBuilderException {
-
-        org.apache.axis2.context.MessageContext axis2MsgCtx = ((org.apache.synapse.core.axis2.
-                Axis2MessageContext) messageContext).getAxis2MessageContext();
-
-        SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
-        OMElement emailsElement = factory.createOMElement(EMAILS_ELEMENT);
-        for (int i = 0; i < emailMessages.size(); i++) {
-            EmailMessage emailMessage = emailMessages.get(i);
-            OMElement emailElement = factory.createOMElement(EMAIL_ELEMENT);
-            addTextElement(factory, emailElement, INDEX_ELEMENT, Integer.toString(i));
-            addTextElement(factory, emailElement, EMAIL_ID_ELEMENT, emailMessage.getEmailId());
-            addTextElement(factory, emailElement, EMAIL_TO_ELEMENT, emailMessage.getTo());
-            addTextElement(factory, emailElement, EMAIL_FROM_ELEMENT, emailMessage.getFrom());
-            addTextElement(factory, emailElement, EMAIL_CC_ELEMENT, emailMessage.getCc());
-            addTextElement(factory, emailElement, EMAIL_BCC_ELEMENT, emailMessage.getBcc());
-            addTextElement(factory, emailElement, EMAIL_REPLY_TO_ELEMENT, emailMessage.getReplyTo());
-            addTextElement(factory, emailElement, EMAIL_SUBJECT_ELEMENT, emailMessage.getSubject());
-            OMElement attachmentsElement = factory.createOMElement(ATTACHMENTS_ELEMENT);
-            for (int j = 0; j < emailMessage.getAttachments().size(); j++) {
-                Attachment attachment = emailMessage.getAttachments().get(j);
-                OMElement attachmentElement = factory.createOMElement(ATTACHMENT_ELEMENT);
-                addTextElement(factory, attachmentElement, INDEX_ELEMENT, Integer.toString(j));
-                addTextElement(factory, attachmentElement, ATTACHMENT_NAME, attachment.getName());
-                addTextElement(factory, attachmentElement, ATTACHMENT_CONTENT_TYPE, attachment.getContentType());
-                attachmentsElement.addChild(attachmentElement);
-            }
-            emailElement.addChild(attachmentsElement);
-            emailsElement.addChild(emailElement);
-        }
-        setPayloadInEnvelope(axis2MsgCtx, emailsElement);
-        handleSpecialProperties(ContentTypes.APPLICATION_XML, axis2MsgCtx);
-    }
-
-    /**
-     * Adds text element to parent OMElement
-     *
-     * @param factory SOAP factory to create element
-     * @param parent Parent OMElement
-     * @param qName QName of the new text element
-     * @param value Value of the new text element
-     */
-    private static void addTextElement(SOAPFactory factory, OMElement parent, QName qName, String value) {
-        if (!StringUtils.isEmpty(value)) {
-            OMElement newElement = factory.createOMElement(qName);
-            newElement.addChild(factory.createOMText(value));
-            parent.addChild(newElement);
-        }
-    }
-
-    /**
-     * Overrides the payload in message body
-     *
-     * @param axis2MsgCtx Axis2MessageContext
-     * @param payload     Payload to be set in the body
-     * @throws ContentBuilderException if failed to set payload
-     */
-    public static void setPayloadInEnvelope(org.apache.axis2.context.MessageContext axis2MsgCtx, OMElement payload) throws ContentBuilderException {
-
-        JsonUtil.removeJsonPayload(axis2MsgCtx);
-        try {
-            axis2MsgCtx.setEnvelope(TransportUtils.createSOAPEnvelope(payload));
         } catch (AxisFault e) {
-            throw new ContentBuilderException(format("Failed to set XML content. %s", e.getMessage()), e);
+            throw new ContentBuilderException("Failed to build content.", e);
         }
     }
 
     /**
      * Changes the content type and handles other headers
      *
-     * @param resultValue Value to be set in header
+     * @param resultValue     Value to be set in header
      * @param axis2MessageCtx Axis2 Message Context
      */
     public static void handleSpecialProperties(Object resultValue,
-                                         org.apache.axis2.context.MessageContext axis2MessageCtx) {
+                                               org.apache.axis2.context.MessageContext axis2MessageCtx) {
+
         axis2MessageCtx.setProperty(Constants.Configuration.MESSAGE_TYPE, resultValue);
         axis2MessageCtx.setProperty(Constants.Configuration.CONTENT_TYPE, resultValue);
         Object o = axis2MessageCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
@@ -202,15 +117,138 @@ public final class ResponseHandler {
     }
 
     /**
-     * Sets the error code and error detail in message
+     * Converts the XML String to XML Element and sets in message context
      *
-     * @param messageContext Message Context
-     * @param error          Error to be set
+     * @param messageContext The message context that is processed
+     * @param xmlString      Output response
      */
-    public static void setErrorsInMessage(MessageContext messageContext, Error error) {
+    static void preparePayload(MessageContext messageContext, String xmlString) throws ContentBuilderException {
 
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_ERROR_CODE, error.getErrorCode());
-        messageContext.setProperty(EmailPropertyNames.PROPERTY_ERROR_MESSAGE, error.getErrorDetail());
+        String error = "Failed to set response in payload.";
+        OMElement element;
+        try {
+            element = AXIOMUtil.stringToOM(xmlString);
+            setPayloadInEnvelope(((Axis2MessageContext) messageContext).getAxis2MessageContext(), element);
+        } catch (XMLStreamException e) {
+            throw new ContentBuilderException(error, e);
+        }
+    }
+
+    /**
+     * Overrides the payload in message body
+     *
+     * @param axis2MsgCtx Axis2MessageContext
+     * @param payload     Payload to be set in the body
+     * @throws ContentBuilderException if failed to set payload
+     */
+    public static void setPayloadInEnvelope(org.apache.axis2.context.MessageContext axis2MsgCtx, OMElement payload)
+            throws ContentBuilderException {
+
+        JsonUtil.removeJsonPayload(axis2MsgCtx);
+        try {
+            axis2MsgCtx.setEnvelope(TransportUtils.createSOAPEnvelope(payload));
+        } catch (AxisFault e) {
+            throw new ContentBuilderException("Failed to set XML content.", e);
+        }
+    }
+
+    /**
+     * Builds and sets Binary content
+     *
+     * @param inputStream         Content as an input stream
+     * @param axis2MessageContext Axis2 Message Context
+     */
+    private static void setBinaryContent(InputStream inputStream,
+                                         org.apache.axis2.context.MessageContext axis2MessageContext) throws AxisFault {
+
+        SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
+        OMNamespace ns = factory.createOMNamespace(
+                RelayConstants.BINARY_CONTENT_QNAME.getNamespaceURI(), "ns");
+        OMElement element = factory.createOMElement(
+                RelayConstants.BINARY_CONTENT_QNAME.getLocalPart(), ns);
+
+        StreamingOnRequestDataSource ds = new StreamingOnRequestDataSource(inputStream);
+        DataHandler dataHandler = new DataHandler(ds);
+
+        //create an OMText node with the above DataHandler and set optimized to true
+        OMText textData = factory.createOMText(dataHandler, true);
+        element.addChild(textData);
+        axis2MessageContext.setEnvelope(TransportUtils.createSOAPEnvelope(element));
+    }
+
+    /**
+     * Builds and sets text content
+     *
+     * @param inputStream         Content as an input stream
+     * @param axis2MessageContext Axis2 Message Context
+     * @throws ContentBuilderException if failed to set text content
+     */
+    private static void setTextContent(InputStream inputStream,
+                                       org.apache.axis2.context.MessageContext axis2MessageContext)
+            throws ContentBuilderException {
+
+        try {
+            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            setPayloadInEnvelope(axis2MessageContext, getTextElement(text));
+        } catch (IOException e) {
+            throw new ContentBuilderException("Failed to set text content.", e);
+        }
+    }
+
+    /**
+     * Builds and sets JSON content
+     *
+     * @param inputStream         Content as an input stream
+     * @param axis2MessageContext Axis2 Message Context
+     * @throws ContentBuilderException if failed to set JSON content
+     */
+    private static void setJSONPayload(InputStream inputStream,
+                                       org.apache.axis2.context.MessageContext axis2MessageContext)
+            throws ContentBuilderException {
+
+        try {
+            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            JsonUtil.getNewJsonPayload(axis2MessageContext, text, true, true);
+        } catch (IOException e) {
+            throw new ContentBuilderException("Failed to set JSON content.", e);
+        }
+    }
+
+    /**
+     * Builds and sets XML content
+     *
+     * @param inputStream         Content as an input stream
+     * @param axis2MessageContext Axis2 Message Context
+     * @throws ContentBuilderException if failed to set XML content
+     */
+    private static void setXMLContent(InputStream inputStream,
+                                      org.apache.axis2.context.MessageContext axis2MessageContext)
+            throws ContentBuilderException {
+
+        try {
+            String text = IOUtils.toString(inputStream, StandardCharsets.UTF_8.name());
+            OMElement omXML = AXIOMUtil.stringToOM(text);
+            setPayloadInEnvelope(axis2MessageContext, omXML);
+        } catch (IOException | XMLStreamException e) {
+            throw new ContentBuilderException("Failed to set XML content.", e);
+        }
+    }
+
+    /**
+     * Gets text element
+     *
+     * @param content Content to be wrapped
+     * @return Text Element
+     */
+    private static OMElement getTextElement(String content) {
+
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMElement textElement = factory.createOMElement(TEXT_ELEMENT);
+        if (content == null) {
+            content = StringUtils.EMPTY;
+        }
+        textElement.setText(content);
+        return textElement;
     }
 
 }

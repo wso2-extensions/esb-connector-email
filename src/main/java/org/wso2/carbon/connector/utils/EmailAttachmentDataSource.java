@@ -27,7 +27,8 @@ import java.io.OutputStream;
 import javax.activation.DataSource;
 
 /**
- * Email Attachment Data Source
+ * Email Attachment Data Source used as an extension to default Data Source to set the content type
+ * of the email attachment more specifically rather than setting octet-stream
  */
 public class EmailAttachmentDataSource implements DataSource {
 

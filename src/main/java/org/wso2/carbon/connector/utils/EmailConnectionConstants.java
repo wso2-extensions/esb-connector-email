@@ -18,20 +18,16 @@
 package org.wso2.carbon.connector.utils;
 
 /**
- * Contains the Java Mail API Properties
+ * Contains the constants used to establish a connection
  */
-public final class EmailConfigProperties {
+public final class EmailConnectionConstants {
 
-    public static final String PROPERTY_STORE_PROTOCOL = "mail.store.protocol";
+    // Java mail API properties
     public static final String PROPERTY_HOST = "mail.%s.host";
     public static final String PROPERTY_PORT = "mail.%s.port";
     public static final String PROPERTY_AUTH = "mail.%s.auth";
-    public static final String PROPERTY_TLS_ENABLE = "mail.%s.starttls.enable";
-    public static final String PROPERTY_SOCKETFACTORY_CLASS = "mail.%s.socketFactory.class";
-    public static final String PROPERTY_SOCKETFACTORY_FALLBACK = "mail.%s.socketFactory.fallback";
-    public static final String PROPERTY_SOCKETFACTORY_PORT = "mail.%s.socketFactory.port";
-    public static final String PROPERTY_CHARSET = "mail.mime.charset";
-    public static final String PROPERTY_SOCKET_FACTORY = "mail.%s.ssl.socketFactory";
+    public static final String PROPERTY_SOCKET_FACTORY_FALLBACK = "mail.%s.socketFactory.fallback";
+    public static final String PROPERTY_SOCKET_FACTORY_PORT = "mail.%s.socketFactory.port";
     public static final String PROPERTY_SSL_CIPHER_SUITES = "mail.%s.ssl.ciphersuites";
     public static final String PROPERTY_SSL_PROTOCOLS = "mail.%s.ssl.protocols";
     public static final String PROPERTY_SSL_ENABLE = "mail.%s.ssl.enable";
@@ -43,7 +39,7 @@ public final class EmailConfigProperties {
     public static final String PROPERTY_WRITE_TIMEOUT = "mail.%s.writetimeout";
     public static final String PROPERTY_CHECK_SERVER_IDENTITY = "mail.%s.ssl.checkserveridentity";
 
-    private EmailConfigProperties() {
+    private EmailConnectionConstants() {
 
     }
 }

@@ -18,10 +18,13 @@
 package org.wso2.carbon.connector.utils;
 
 /**
- * Property names of the properties set containing email data
+ * Contains the constants used to set the response
  */
-public final class EmailPropertyNames {
+public final class ResponseConstants {
 
+    public static final String RESPONSE_CONTENT_TYPE = "application/xml";
+
+    // Properties set in the message context which contains data returned by the operation
     public static final String PROPERTY_EMAILS = "PROPERTY_EMAILS";
     public static final String PROPERTY_ATTACHMENT_TYPE = "ATTACHMENT_TYPE";
     public static final String PROPERTY_ATTACHMENT_NAME = "ATTACHMENT_NAME";
@@ -37,7 +40,7 @@ public final class EmailPropertyNames {
     public static final String PROPERTY_ERROR_CODE = "ERROR_CODE";
     public static final String PROPERTY_ERROR_MESSAGE = "ERROR_MESSAGE";
 
-    private EmailPropertyNames() {
+    private ResponseConstants() {
 
     }
 }

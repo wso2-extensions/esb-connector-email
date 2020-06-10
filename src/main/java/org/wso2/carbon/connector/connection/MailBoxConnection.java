@@ -45,8 +45,7 @@ public class MailBoxConnection extends EmailConnection {
             this.store = this.getSession().getStore(connectionConfiguration.getProtocol().getName());
             this.store.connect();
         } catch (MessagingException e) {
-            throw new EmailConnectionException(format("Error occurred while connecting to the store. %s",
-                    e.getMessage()), e);
+            throw new EmailConnectionException("Error occurred while connecting to the store.", e);
         }
     }
 
@@ -60,7 +59,7 @@ public class MailBoxConnection extends EmailConnection {
      * @param openMode      open the folder in READ_ONLY or READ_WRITE mode
      * @return the opened Folder
      */
-    public synchronized Folder getFolder(String mailBoxFolder, int openMode) throws EmailConnectionException {
+    public Folder getFolder(String mailBoxFolder, int openMode) throws EmailConnectionException {
 
         try {
             if (folder != null) {
@@ -74,8 +73,7 @@ public class MailBoxConnection extends EmailConnection {
             folder.open(openMode);
 
         } catch (MessagingException e) {
-            throw new EmailConnectionException(format("Error while opening folder : %s. %s", mailBoxFolder,
-                    e.getMessage()), e);
+            throw new EmailConnectionException(format("Error while opening folder : %s.", mailBoxFolder), e);
         }
         return folder;
     }
@@ -85,7 +83,7 @@ public class MailBoxConnection extends EmailConnection {
      *
      * @param expunge whether to remove all the emails marked as DELETED.
      */
-    public synchronized void closeFolder(boolean expunge) throws EmailConnectionException {
+    public void closeFolder(boolean expunge) throws EmailConnectionException {
 
         try {
             if (log.isDebugEnabled()) {
@@ -95,8 +93,8 @@ public class MailBoxConnection extends EmailConnection {
                 folder.close(expunge);
             }
         } catch (MessagingException e) {
-            throw new EmailConnectionException(format("Error occurred while closing folder: %s. %s",
-                    this.folder.getFullName(), e.getMessage()), e);
+            throw new EmailConnectionException(format("Error occurred while closing folder: %s.",
+                    this.folder.getFullName()), e);
         }
     }
 
@@ -114,18 +112,17 @@ public class MailBoxConnection extends EmailConnection {
     /**
      * Closes the folder and the store
      */
-    synchronized void disconnect() {
+     void disconnect() {
 
         try {
             closeFolder(false);
         } catch (Exception e) {
-            log.error(format("Error closing mailbox folder %s when disconnecting. %s", folder.getName(),
-                    e.getMessage()), e);
+            log.error(format("Error closing mailbox folder %s when disconnecting.", folder.getName()), e);
         } finally {
             try {
                 store.close();
             } catch (Exception e) {
-                log.error(format("Error closing store when disconnecting. %s", e.getMessage()), e);
+                log.error("Error closing store when disconnecting.", e);
             }
         }
     }

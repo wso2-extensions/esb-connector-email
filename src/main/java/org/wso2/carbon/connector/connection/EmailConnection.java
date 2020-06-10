@@ -36,7 +36,7 @@ public class EmailConnection {
     private Session session;
     private EmailProtocol protocol;
 
-    public EmailConnection(ConnectionConfiguration connectionConfiguration) {
+    EmailConnection(ConnectionConfiguration connectionConfiguration) {
 
         this.protocol = connectionConfiguration.getProtocol();
         Properties sessionProperties = setSessionProperties(connectionConfiguration.getHost(),

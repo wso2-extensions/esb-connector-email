@@ -39,13 +39,16 @@ import static javax.mail.Part.ATTACHMENT;
 import static javax.mail.Part.INLINE;
 
 /**
- * Builds a new message
+ * Builds a new MIME message to be sent as an email
  */
 public final class MessageBuilder {
 
     private static final String CONTENT_TYPE_HEADER = "Content-Type";
     private static final String CONTENT_TRANSFER_ENCODING_HEADER = "Content-Transfer-Encoding";
     private static final String MULTIPART_TYPE = "multipart/*";
+    private static final String DEFAULT_CONTENT_TYPE = "text/html";
+    private static final String DEFAULT_ENCODING = "UTF-8";
+    private static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "Base64";
 
     private final MimeMessage message;
 
@@ -79,7 +82,7 @@ public final class MessageBuilder {
      */
     public MessageBuilder withSubject(String subject) throws MessagingException {
 
-        if (!StringUtils.isEmpty(subject)) {
+        if (StringUtils.isNotEmpty(subject)) {
             this.message.setSubject(subject);
         }
         return this;
@@ -94,7 +97,7 @@ public final class MessageBuilder {
      */
     public MessageBuilder replyTo(String replyTo) throws MessagingException {
 
-        if (!StringUtils.isEmpty(replyTo)) {
+        if (StringUtils.isNotEmpty(replyTo)) {
             message.setReplyTo(InternetAddress.parse(replyTo));
         }
         return this;
@@ -180,7 +183,7 @@ public final class MessageBuilder {
     private void setRecipient(String recipient, Message message, Message.RecipientType recipientType)
             throws MessagingException {
 
-        if (!StringUtils.isEmpty(recipient)) {
+        if (StringUtils.isNotEmpty(recipient)) {
             message.setRecipients(
                     recipientType,
                     InternetAddress.parse(recipient)
@@ -200,15 +203,15 @@ public final class MessageBuilder {
     public MessageBuilder withBody(String content, String contentType, String encoding,
                                    String contentTransferEncoding) {
 
-        this.contentType = StringUtils.isEmpty(contentType) ? EmailConstants.DEFAULT_CONTENT_TYPE : contentType;
+        this.contentType = StringUtils.isEmpty(contentType) ? DEFAULT_CONTENT_TYPE : contentType;
         this.contentType = StringUtils.isEmpty(encoding)
-                ? this.contentType + "; charset=" + EmailConstants.DEFAULT_ENCODING
+                ? this.contentType + "; charset=" + DEFAULT_ENCODING
                 : this.contentType + "; charset=" + encoding;
-        if (!StringUtils.isEmpty(content)) {
+        if (StringUtils.isNotEmpty(content)) {
             this.content = content;
         }
         this.contentTransferEncoding = StringUtils.isEmpty(contentTransferEncoding)
-                ? EmailConstants.DEFAULT_CONTENT_TRANSFER_ENCODING : contentTransferEncoding;
+                ? DEFAULT_CONTENT_TRANSFER_ENCODING : contentTransferEncoding;
         return this;
     }
 
@@ -220,7 +223,7 @@ public final class MessageBuilder {
      */
     public MessageBuilder withAttachments(String attachments) {
 
-        if (!StringUtils.isEmpty(attachments)) {
+        if (StringUtils.isNotEmpty(attachments)) {
             this.attachments = attachments;
         }
         return this;
@@ -261,7 +264,7 @@ public final class MessageBuilder {
         part.setDisposition(INLINE);
         part.setContent(content, contentType);
         part.setHeader(CONTENT_TYPE_HEADER, contentType);
-        if (!StringUtils.isEmpty(contentTransferEncoding)) {
+        if (StringUtils.isNotEmpty(contentTransferEncoding)) {
             part.setHeader(CONTENT_TRANSFER_ENCODING_HEADER, contentTransferEncoding);
         }
     }

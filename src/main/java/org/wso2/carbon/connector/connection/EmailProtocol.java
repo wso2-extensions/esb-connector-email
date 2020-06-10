@@ -17,7 +17,7 @@
  */
 package org.wso2.carbon.connector.connection;
 
-import org.wso2.carbon.connector.utils.EmailConfigProperties;
+import org.wso2.carbon.connector.utils.EmailConnectionConstants;
 
 import java.net.Socket;
 
@@ -90,7 +90,7 @@ public enum EmailProtocol {
      */
     public String getHostProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_HOST);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_HOST);
     }
 
     /**
@@ -100,7 +100,7 @@ public enum EmailProtocol {
      */
     public String getPortProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_PORT);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_PORT);
     }
 
     /**
@@ -110,7 +110,7 @@ public enum EmailProtocol {
      */
     public String getMailAuthProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_AUTH);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_AUTH);
     }
 
     /**
@@ -120,7 +120,7 @@ public enum EmailProtocol {
      */
     public String getSocketFactoryFallbackProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SOCKETFACTORY_FALLBACK);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SOCKET_FACTORY_FALLBACK);
     }
 
     /**
@@ -130,7 +130,7 @@ public enum EmailProtocol {
      */
     public String getSocketFactoryPortProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SOCKETFACTORY_PORT);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SOCKET_FACTORY_PORT);
     }
 
     /**
@@ -140,7 +140,7 @@ public enum EmailProtocol {
      */
     public String getSslCipherSuitesProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SSL_CIPHER_SUITES);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SSL_CIPHER_SUITES);
     }
 
     /**
@@ -150,7 +150,7 @@ public enum EmailProtocol {
      */
     public String getSslProtocolsProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SSL_PROTOCOLS);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SSL_PROTOCOLS);
     }
 
     /**
@@ -160,7 +160,7 @@ public enum EmailProtocol {
      */
     public String getSslEnableProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SSL_ENABLE);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SSL_ENABLE);
     }
 
     /**
@@ -170,7 +170,7 @@ public enum EmailProtocol {
      */
     public String getSslTrustProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_SSL_TRUST);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_SSL_TRUST);
     }
 
     /**
@@ -180,7 +180,7 @@ public enum EmailProtocol {
      */
     public String getStartTlsProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_START_TLS_ENABLE);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_START_TLS_ENABLE);
     }
 
     /**
@@ -190,7 +190,7 @@ public enum EmailProtocol {
      */
     public String getTransportProtocolProperty() {
 
-        return EmailConfigProperties.PROPERTY_TRANSPORT_NAME;
+        return EmailConnectionConstants.PROPERTY_TRANSPORT_NAME;
     }
 
     /**
@@ -200,7 +200,7 @@ public enum EmailProtocol {
      */
     public String getReadTimeoutProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_TIMEOUT);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_TIMEOUT);
     }
 
     /**
@@ -210,7 +210,7 @@ public enum EmailProtocol {
      */
     public String getConnectionTimeoutProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_CONNECTION_TIMEOUT);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_CONNECTION_TIMEOUT);
     }
 
     /**
@@ -220,7 +220,7 @@ public enum EmailProtocol {
      */
     public String getWriteTimeoutProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_WRITE_TIMEOUT);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_WRITE_TIMEOUT);
     }
 
     /**
@@ -232,7 +232,7 @@ public enum EmailProtocol {
      */
     public String getCheckServerIdentityProperty() {
 
-        return unmaskProperty(EmailConfigProperties.PROPERTY_CHECK_SERVER_IDENTITY);
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_CHECK_SERVER_IDENTITY);
     }
 
     private String unmaskProperty(String property) {

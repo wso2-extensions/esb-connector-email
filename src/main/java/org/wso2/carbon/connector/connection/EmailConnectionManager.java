@@ -146,11 +146,11 @@ public class EmailConnectionManager {
     }
 
     /**
-     * Clears connection pools
+     * Shuts down the connection pools
      *
      */
-    public void clearConnectionPools(){
-        log.debug("Clearing connection pools...");
+    public void shutdownConnectionPools(){
+        log.debug("Shutting down connection pools...");
         for (Map.Entry<String, EmailConnectionPool> pool : connectionPoolMap.entrySet()){
             try {
                 pool.getValue().close();

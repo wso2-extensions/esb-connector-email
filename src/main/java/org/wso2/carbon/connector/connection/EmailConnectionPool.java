@@ -35,8 +35,12 @@ public class EmailConnectionPool extends GenericObjectPool {
     EmailConnectionPool(EmailConnectionFactory objFactory, ConnectionConfiguration connectionConfiguration) {
 
         super(objFactory);
-        this.setMaxActive(connectionConfiguration.getMaxActiveConnections());
-        this.setMaxIdle(connectionConfiguration.getMaxIdleConnections());
+        if (connectionConfiguration.getMaxActiveConnections() > 0) {
+            this.setMaxActive(connectionConfiguration.getMaxActiveConnections());
+        }
+        if (connectionConfiguration.getMaxIdleConnections() > 0) {
+            this.setMaxIdle(connectionConfiguration.getMaxIdleConnections());
+        }
         if (connectionConfiguration.getMaxWaitTime() > 0) {
             this.setMaxWait(connectionConfiguration.getMaxWaitTime());
         }
@@ -86,8 +90,7 @@ public class EmailConnectionPool extends GenericObjectPool {
             log.debug("Borrowing object from the connection pool...");
             return super.borrowObject();
         } catch (Exception e) {
-            throw new EmailConnectionPoolException(format("Error occurred while borrowing connection from the pool. %s",
-                    e.getMessage()), e);
+            throw new EmailConnectionPoolException("Error occurred while borrowing connection from the pool.", e);
         }
     }
 
@@ -98,7 +101,7 @@ public class EmailConnectionPool extends GenericObjectPool {
             log.debug("Returning object to the connection pool...");
             super.returnObject(obj);
         } catch (Exception e) {
-            log.error(format("Error occurred while returning the connection to the pool. %s", e.getMessage()), e);
+            log.error("Error occurred while returning the connection to the pool.", e);
         }
     }
 
@@ -108,8 +111,7 @@ public class EmailConnectionPool extends GenericObjectPool {
         try {
             super.close();
         } catch (Exception e) {
-            throw new EmailConnectionPoolException(format("Error occurred while closing the connections. %s",
-                    e.getMessage()), e);
+            throw new EmailConnectionPoolException("Error occurred while closing the connections.", e);
         }
     }
 }

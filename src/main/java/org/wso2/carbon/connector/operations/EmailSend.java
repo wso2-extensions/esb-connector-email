@@ -25,13 +25,14 @@ import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
-import org.wso2.carbon.connector.utils.ConfigurationUtils;
 import org.wso2.carbon.connector.utils.EmailConstants;
+import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
 import org.wso2.carbon.connector.utils.MessageBuilder;
-import org.wso2.carbon.connector.utils.ResponseHandler;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.mail.MessagingException;
 import javax.mail.Transport;
 import javax.mail.internet.MimeMessage;
@@ -43,22 +44,25 @@ import static java.lang.String.format;
  */
 public class EmailSend extends AbstractConnector {
 
+    private static final String EMAIL_CONNECTOR_HEADER_PREFIX = "EMAIL_CONNECTOR_HEADER";
+    private static final String HEADER_NAME_SEPARATOR = ":";
+
     @Override
     public void connect(MessageContext messageContext) {
 
         try {
-            String name = ConfigurationUtils.getConnectionName(messageContext);
+            String name = EmailUtils.getConnectionName(messageContext);
             EmailConnection connection = EmailConnectionManager.getEmailConnectionManager().getConnection(name);
             sendMessage(messageContext, connection);
-            ResponseHandler.generateOutput(messageContext, true);
+            EmailUtils.generateOutput(messageContext, true);
         } catch (EmailConnectionException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
             handleException(e.getMessage(), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException(e.getMessage(), e, messageContext);
         } catch (ContentBuilderException e) {
-            ResponseHandler.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
             handleException(e.getMessage(), e, messageContext);
         }
     }
@@ -68,7 +72,6 @@ public class EmailSend extends AbstractConnector {
      *
      * @param messageContext The message context that is generated for sending the email
      * @param session        Mail Session to be used
-     * @return a result status indicating whether the email send is successful or not
      */
     private void sendMessage(MessageContext messageContext, EmailConnection session) throws EmailConnectionException,
             InvalidConfigurationException {
@@ -90,7 +93,6 @@ public class EmailSend extends AbstractConnector {
                     "Recipients are not provided.");
         } else {
             try {
-                //TODO: Set headers from transport properties
                 MimeMessage message = MessageBuilder.newMessage(session.getSession())
                         .to(to)
                         .fromAddresses(from)
@@ -100,16 +102,44 @@ public class EmailSend extends AbstractConnector {
                         .withSubject(subject)
                         .withBody(content, contentType, encoding, contentTransferEncoding)
                         .withAttachments(attachments)
+                        .withHeaders(getEmailHeadersFromProperties(messageContext))
                         .build();
-                Transport.send(message);
-                log.debug("Email was sent successfully...");
+                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                try {
+                    Thread.currentThread().setContextClassLoader(javax.mail.Message.class.getClassLoader());
+                    Transport.send(message);
+                } finally {
+                    Thread.currentThread().setContextClassLoader(classLoader);
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug(format("Email was sent successfully to %s..", to));
+                }
             } catch (MessagingException e) {
-                throw new EmailConnectionException(format("Error occurred while sending the email. %s", e.getMessage()),
-                        e);
+                throw new EmailConnectionException(
+                        format("Error occurred while sending the email with subject %s to %s.", subject, to), e);
             } catch (IOException e) {
-                throw new EmailConnectionException(format("Error occurred while adding attachments to the email. %s"
-                        , e.getMessage()), e);
+                throw new EmailConnectionException(format("Error occurred while adding attachments with subject %s " +
+                        "to the email to %s.", subject, to), e);
             }
         }
+    }
+
+    /**
+     * Retrieves custom headers from properties in messages context
+     *
+     * @param messageContext Message Context
+     * @return map of headers
+     */
+    private Map<String, String> getEmailHeadersFromProperties(MessageContext messageContext) {
+
+        Map<String, String> headers = new HashMap<>();
+        for (Object key : messageContext.getPropertyKeySet()) {
+            String propertyName = (String) key;
+            if (propertyName.startsWith(EMAIL_CONNECTOR_HEADER_PREFIX)) {
+                String propertyNameWithoutPrefix = propertyName.split(HEADER_NAME_SEPARATOR)[1];
+                headers.put(propertyNameWithoutPrefix, (String) messageContext.getProperty(propertyName));
+            }
+        }
+        return headers;
     }
 }

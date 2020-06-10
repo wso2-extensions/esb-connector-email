@@ -17,7 +17,9 @@
  */
 package org.wso2.carbon.connector.pojo;
 
+import java.io.IOException;
 import java.io.InputStream;
+import javax.activation.DataSource;
 
 /**
  * Represents an attachment in the email
@@ -27,6 +29,16 @@ public class Attachment {
     private String name;
     private String contentType;
     private InputStream content;
+
+    public Attachment() {
+
+    }
+
+    public Attachment(DataSource dataSource) throws IOException {
+        this.name = dataSource.getName();
+        this.contentType = dataSource.getContentType();
+        this.content = dataSource.getInputStream();
+    }
 
     public String getName() {
 
