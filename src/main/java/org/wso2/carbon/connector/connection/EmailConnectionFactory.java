@@ -17,14 +17,14 @@
  */
 package org.wso2.carbon.connector.connection;
 
-import org.apache.commons.pool.PoolableObjectFactory;
+import org.wso2.carbon.connector.core.pool.ConnectionFactory;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 
 /**
  * Email Connection Factory
  */
-public class EmailConnectionFactory implements PoolableObjectFactory {
+public class EmailConnectionFactory implements ConnectionFactory {
 
     private ConnectionConfiguration connectionConfiguration;
 

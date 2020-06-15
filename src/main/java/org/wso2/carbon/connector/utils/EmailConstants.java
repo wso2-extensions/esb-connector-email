@@ -22,6 +22,8 @@ package org.wso2.carbon.connector.utils;
  */
 public final class EmailConstants {
 
+    public static final String CONNECTOR_NAME = "email";
+
     // Template Parameters
     public static final String NAME = "name";
     public static final String TO = "to";

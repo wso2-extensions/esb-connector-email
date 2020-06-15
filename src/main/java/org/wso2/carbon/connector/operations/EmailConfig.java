@@ -20,14 +20,14 @@ package org.wso2.carbon.connector.operations;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
-import org.wso2.carbon.connector.connection.EmailConnectionManager;
 import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
-import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.EmailConstants;
+import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
 
 /**
@@ -40,7 +40,7 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
 
         try {
             ConnectionConfiguration configuration = getConnectionConfigFromContext(messageContext);
-            EmailConnectionManager.getEmailConnectionManager().createConnection(configuration);
+            EmailUtils.createConnection(configuration);
         } catch (InvalidConfigurationException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException("Failed to initiate email configuration.", e, messageContext);
@@ -55,7 +55,7 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
     @Override
     public void destroy() {
 
-        EmailConnectionManager.getEmailConnectionManager().shutdownConnectionPools();
+        ConnectionHandler.getConnectionHandler().shutdownConnections(EmailConstants.CONNECTOR_NAME);
     }
 
     /**

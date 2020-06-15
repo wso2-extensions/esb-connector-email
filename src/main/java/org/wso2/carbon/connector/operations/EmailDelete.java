@@ -18,13 +18,12 @@
 package org.wso2.carbon.connector.operations;
 
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.connection.EmailConnectionManager;
-import org.wso2.carbon.connector.connection.EmailConnectionPool;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
-import org.wso2.carbon.connector.exception.EmailConnectionPoolException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.utils.EmailConstants;
@@ -47,16 +46,16 @@ public class EmailDelete extends AbstractConnector {
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
         String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
-        EmailConnectionPool pool = null;
-        MailBoxConnection connection = null;
+        String connectionName = null;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
         try {
-            String connectionName = EmailUtils.getConnectionName(messageContext);
-            pool = EmailConnectionManager.getEmailConnectionManager().getConnectionPool(connectionName);
-            connection = (MailBoxConnection) pool.borrowObject();
+            connectionName = EmailUtils.getConnectionName(messageContext);
+            MailBoxConnection connection = (MailBoxConnection) handler
+                    .getConnection(EmailConstants.CONNECTOR_NAME, connectionName);
             boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.DELETED,
                     true);
             EmailUtils.generateOutput(messageContext, status);
-        } catch (EmailConnectionException | EmailConnectionPoolException e) {
+        } catch (EmailConnectionException | ConnectException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
             handleException(format(errorString, folder), e, messageContext);
         } catch (EmailNotFoundException e) {
@@ -69,9 +68,7 @@ public class EmailDelete extends AbstractConnector {
             EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
             handleException(format(errorString, folder), e, messageContext);
         } finally {
-            if (pool != null) {
-                pool.returnObject(connection);
-            }
+            handler.returnConnection(EmailConstants.CONNECTOR_NAME, connectionName);
         }
     }
 }

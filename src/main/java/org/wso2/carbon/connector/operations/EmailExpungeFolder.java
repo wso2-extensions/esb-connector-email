@@ -19,13 +19,12 @@ package org.wso2.carbon.connector.operations;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.connection.EmailConnectionManager;
-import org.wso2.carbon.connector.connection.EmailConnectionPool;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
-import org.wso2.carbon.connector.exception.EmailConnectionPoolException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
@@ -45,21 +44,21 @@ public class EmailExpungeFolder extends AbstractConnector {
 
         String errorString = "Error occurred while expunging folder: %s.";
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
-        EmailConnectionPool pool = null;
-        MailBoxConnection connection = null;
+        String connectionName = null;
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
         try {
             if (StringUtils.isEmpty(folder)) {
                 folder = EmailConstants.DEFAULT_FOLDER;
             }
-            String connectionName = EmailUtils.getConnectionName(messageContext);
-            pool = EmailConnectionManager.getEmailConnectionManager().getConnectionPool(connectionName);
-            connection = (MailBoxConnection) pool.borrowObject();
+            connectionName = EmailUtils.getConnectionName(messageContext);
+            MailBoxConnection connection = (MailBoxConnection) handler
+                    .getConnection(EmailConstants.CONNECTOR_NAME, connectionName);
             expungeFolder(connection, folder);
             if (log.isDebugEnabled()) {
                 log.debug(format("Expunged folder: %s...", folder));
             }
             EmailUtils.generateOutput(messageContext, true);
-        } catch (EmailConnectionException | EmailConnectionPoolException e) {
+        } catch (EmailConnectionException | ConnectException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
             handleException(format(errorString, folder), e, messageContext);
         } catch (InvalidConfigurationException e) {
@@ -69,9 +68,7 @@ public class EmailExpungeFolder extends AbstractConnector {
             EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
             handleException(format(errorString, folder), e, messageContext);
         } finally {
-            if (pool != null) {
-                pool.returnObject(connection);
-            }
+            handler.returnConnection(EmailConstants.CONNECTOR_NAME, connectionName);
         }
     }
 

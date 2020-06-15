@@ -20,9 +20,10 @@ package org.wso2.carbon.connector.operations;
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.EmailConnection;
-import org.wso2.carbon.connector.connection.EmailConnectionManager;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.utils.EmailConstants;
@@ -50,12 +51,14 @@ public class EmailSend extends AbstractConnector {
     @Override
     public void connect(MessageContext messageContext) {
 
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
         try {
             String name = EmailUtils.getConnectionName(messageContext);
-            EmailConnection connection = EmailConnectionManager.getEmailConnectionManager().getConnection(name);
+            EmailConnection connection = (EmailConnection) handler
+                    .getConnection(EmailConstants.CONNECTOR_NAME, name);
             sendMessage(messageContext, connection);
             EmailUtils.generateOutput(messageContext, true);
-        } catch (EmailConnectionException e) {
+        } catch (EmailConnectionException | ConnectException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
             handleException(e.getMessage(), e, messageContext);
         } catch (InvalidConfigurationException e) {

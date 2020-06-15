@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.connector.connection;
 
+import org.wso2.carbon.connector.core.connection.Connection;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.utils.EmailConstants;
 
@@ -27,7 +28,7 @@ import javax.mail.Session;
 /**
  * Represents an email connection
  */
-public class EmailConnection {
+public class EmailConnection implements Connection {
 
     private static final String COMMA_SEPARATOR = ",";
     private static final String WHITESPACE_SEPARATOR = " ";
@@ -36,7 +37,7 @@ public class EmailConnection {
     private Session session;
     private EmailProtocol protocol;
 
-    EmailConnection(ConnectionConfiguration connectionConfiguration) {
+    public EmailConnection(ConnectionConfiguration connectionConfiguration) {
 
         this.protocol = connectionConfiguration.getProtocol();
         Properties sessionProperties = setSessionProperties(connectionConfiguration.getHost(),

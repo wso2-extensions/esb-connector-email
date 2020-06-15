@@ -18,16 +18,17 @@
 package org.wso2.carbon.connector.operations.list;
 
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
-import org.wso2.carbon.connector.utils.ResponseHandler;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
-import org.wso2.carbon.connector.utils.ResponseConstants;
 import org.wso2.carbon.connector.utils.Error;
+import org.wso2.carbon.connector.utils.ResponseConstants;
 
 import java.util.List;
 
@@ -82,7 +83,8 @@ public class EmailGetAttachment extends AbstractConnector {
             EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
             Attachment attachment = EmailUtils.getEmailAttachment(emailMessage, attachmentIndex);
             setProperties(messageContext, attachment);
-            ResponseHandler.setContent(messageContext, attachment.getContent(), attachment.getContentType());
+            PayloadUtils.setContent(((Axis2MessageContext) messageContext).getAxis2MessageContext(),
+                    attachment.getContent(), attachment.getContentType());
         } catch (InvalidConfigurationException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException(ERROR, e, messageContext);

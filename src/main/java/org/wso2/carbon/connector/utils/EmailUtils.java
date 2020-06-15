@@ -21,13 +21,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.core.axis2.Axis2MessageContext;
+import org.wso2.carbon.connector.connection.EmailConnection;
+import org.wso2.carbon.connector.connection.EmailConnectionFactory;
+import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
+import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.core.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.pool.Configuration;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
-import org.wso2.carbon.connector.exception.ContentBuilderException;
+import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
+import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 
 import java.util.List;
@@ -53,6 +61,38 @@ public final class EmailUtils {
 
     private EmailUtils() {
 
+    }
+
+    /**
+     * Creates a connection with the given configuration
+     *
+     * @param connectionConfiguration connection configuration
+     */
+    public static void createConnection(ConnectionConfiguration connectionConfiguration) {
+
+        String connectorName = EmailConstants.CONNECTOR_NAME;
+        String connectionName = connectionConfiguration.getConnectionName();
+        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
+            if (connectionConfiguration.getProtocol().getName().equalsIgnoreCase(EmailProtocol.SMTP.name())) {
+                // For SMTP protocols a connection pool is not required as they require only a session, which need not be
+                // manipulated as the connection.
+                EmailConnection connection = new EmailConnection(connectionConfiguration);
+                handler.createConnection(EmailConstants.CONNECTOR_NAME, connectionName, connection);
+            } else {
+                // For other protocols, such as IMAP and POP3, connections to a store and folder is made which requires to
+                // handled. Hence, for these instances, we will create a connection pool to optimize the use of these
+                // connections.
+                Configuration config = new Configuration();
+                config.setTestOnBorrow(true);
+                config.setTestOnReturn(true);
+                config.setExhaustedAction("WHEN_EXHAUSTED_FAIL");
+                handler.createConnection(EmailConstants.CONNECTOR_NAME, connectionName,
+                        new EmailConnectionFactory(connectionConfiguration), config);
+            }
+        } else {
+            log.debug(format("Connection exists for connection name: %s.", connectionName));
+        }
     }
 
     /**
@@ -189,7 +229,7 @@ public final class EmailUtils {
             throws ContentBuilderException {
 
         String response = START_TAG + resultStatus + END_TAG;
-        ResponseHandler.preparePayload(messageContext, response);
+        PayloadUtils.preparePayload(((Axis2MessageContext) messageContext).getAxis2MessageContext(), response);
     }
 
     /**
@@ -203,4 +243,5 @@ public final class EmailUtils {
         messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_CODE, error.getErrorCode());
         messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_MESSAGE, error.getErrorDetail());
     }
+
 }
