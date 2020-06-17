@@ -37,6 +37,7 @@ public class EmailAttachmentDataSource implements DataSource {
     private final String contentType;
 
     EmailAttachmentDataSource(String name, InputStream content, String contentType) throws IOException {
+
         this.name = name;
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         IOUtils.copy(content, bs);
@@ -46,22 +47,26 @@ public class EmailAttachmentDataSource implements DataSource {
 
     @Override
     public InputStream getInputStream() {
+
         return content;
     }
 
     @Override
     public OutputStream getOutputStream() {
+
         throw new UnsupportedOperationException(EmailAttachmentDataSource.class.getName() + " does not provide an " +
                 "OutputStream");
     }
 
     @Override
     public String getContentType() {
+
         return contentType;
     }
 
     @Override
     public String getName() {
+
         return name;
     }
 }

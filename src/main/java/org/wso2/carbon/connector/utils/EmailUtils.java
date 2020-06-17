@@ -28,8 +28,6 @@ import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
-import org.wso2.carbon.connector.core.pool.Configuration;
-import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
@@ -83,12 +81,8 @@ public final class EmailUtils {
                 // For other protocols, such as IMAP and POP3, connections to a store and folder is made which requires to
                 // handled. Hence, for these instances, we will create a connection pool to optimize the use of these
                 // connections.
-                Configuration config = new Configuration();
-                config.setTestOnBorrow(true);
-                config.setTestOnReturn(true);
-                config.setExhaustedAction("WHEN_EXHAUSTED_FAIL");
                 handler.createConnection(EmailConstants.CONNECTOR_NAME, connectionName,
-                        new EmailConnectionFactory(connectionConfiguration), config);
+                        new EmailConnectionFactory(connectionConfiguration), connectionConfiguration.getConfiguration());
             }
         } else {
             log.debug(format("Connection exists for connection name: %s.", connectionName));
@@ -136,9 +130,10 @@ public final class EmailUtils {
                 log.error(format("No emails found with ID: %s.", emailID));
                 throw new EmailNotFoundException(format("No emails found with ID: %s.", emailID));
             }
-            connection.closeFolder(expunge);
         } catch (MessagingException e) {
             throw new EmailConnectionException("Error occurred while changing email state.", e);
+        } finally {
+            connection.closeFolder(expunge);
         }
         return success;
     }
@@ -189,13 +184,19 @@ public final class EmailUtils {
      */
     public static Attachment getEmailAttachment(EmailMessage emailMessage, String attachmentIndex)
             throws InvalidConfigurationException {
+        String error = "Failed to retrieve attachment.";
 
         Attachment attachment;
         try {
-            attachment = emailMessage.getAttachments().get(Integer.parseInt(attachmentIndex));
+            if (emailMessage.getAttachments() != null) {
+                attachment = emailMessage.getAttachments().get(Integer.parseInt(attachmentIndex));
+            } else {
+                throw new InvalidConfigurationException(format("%s " +
+                        "There are no attachments in the email.", error));
+            }
         } catch (IndexOutOfBoundsException e) {
-            throw new InvalidConfigurationException("Failed to retrieve attachment. " +
-                    "Invalid index set for attachment index.", e);
+            throw new InvalidConfigurationException(format("%s " +
+                    "Invalid index set for attachment index.", error), e);
         }
         return attachment;
     }
@@ -208,13 +209,10 @@ public final class EmailUtils {
      * @return connection name
      */
     public static String getConnectionName(MessageContext messageContext) throws InvalidConfigurationException {
-        // Retrieve name configured init template if referred to as the configKey attribute
+
         String connectionName = (String) messageContext.getProperty(EmailConstants.NAME);
         if (connectionName == null) {
-            connectionName = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.CONNECTION);
-            if (connectionName == null) {
-                throw new InvalidConfigurationException("Connection name is not set.");
-            }
+            throw new InvalidConfigurationException("Connection name is not set.");
         }
         return connectionName;
     }
