@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy name="EmailTaskProxy" startOnLoad="true" transports="http https" xmlns="http://ws.apache.org/ns/synapse">
+    <target faultSequence="fault">
+        <inSequence>
+            <email.list configKey="imapEmailConn">
+                <seen>false</seen>
+                <answered>false</answered>
+                <deleted>false</deleted>
+                <recent>true</recent>
+                <folder>INBOX</folder>
+            </email.list>
+            <log level="full"/>
+        </inSequence>
+        <outSequence/>
+    </target>
+</proxy>

@@ -1,0 +1,10 @@
+{
+  "subjectRegex":"This is the subject",
+  "seen": "false",
+  "answered":"false",
+  "deleted":"false",
+  "recent":"true",
+  "offset":"0",
+  "limit":"2",
+  "folder":"INBOX"
+}

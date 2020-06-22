@@ -27,7 +27,13 @@
     </listeners>
     <test name="email-Connector-Test" preserve-order="true" verbose="2">
         <classes>
-            <class name="org.wso2.carbon.connector.integration.test.emailConnectorIntegrationTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.BaseSender"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.SendEmailTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.ReceiveEmailTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.EmailMarkAsDeletedTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.EmailMarkAsReadTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.DeleteEmailTest"/>
+            <class name="org.wso2.carbon.connector.integration.test.email.ExpungeFolderTest"/>
         </classes>
     </test>
 </suite>

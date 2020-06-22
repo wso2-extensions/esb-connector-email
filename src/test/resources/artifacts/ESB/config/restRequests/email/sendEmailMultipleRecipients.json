@@ -1,0 +1,6 @@
+{
+  "from": "wso2@localhost",
+  "to": "wso2test@localhost,wso2test2@localhost",
+  "subject": "This is the subject",
+  "content": "Hello WSO2.....!"
+}

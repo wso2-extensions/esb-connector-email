@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy name="MultipleEmailsProxy" startOnLoad="true" transports="http https" xmlns="http://ws.apache.org/ns/synapse">
+    <target faultSequence="fault">
+        <inSequence>
+            <email.list configKey="imapEmailConn">
+                <seen>{json-eval($.seen)}</seen>
+                <answered>{json-eval($.answered)}</answered>
+                <deleted>{json-eval($.deleted)}</deleted>
+                <recent>{json-eval($.recent)}</recent>
+                <offset>{json-eval($.offset)}</offset>
+                <limit>{json-eval($.limit)}</limit>
+                <folder>{json-eval($.folder)}</folder>
+            </email.list>
+            <foreach expression="//emails/email">
+                <sequence>
+                    <property expression="//email/index/text()" name="index1" scope="default" type="STRING"/>
+                    <email.getEmailBody>
+                        <emailIndex>{$ctx:index1}</emailIndex>
+                    </email.getEmailBody>
+                    <log level="custom">
+                        <property name="emailID" expression="get-property('EMAIL_ID')"/>
+                        <property name="to" expression="get-property('TO')"/>
+                        <property name="cc" expression="get-property('CC')"/>
+                        <property name="bcc" expression="get-property('BCC')"/>
+                        <property name="from" expression="get-property('FROM')"/>
+                        <property name="subject" expression="get-property('SUBJECT')"/>
+                        <property name="textContent" expression="get-property('TEXT_CONTENT')"/>
+                        <property name="htmlContent" expression="get-property('HTML_CONTENT')"/>
+                    </log>
+                    <foreach expression="//email/attachments/attachment">
+                        <sequence>
+                            <property expression="//attachment/index/text()" name="index2" scope="default" type="STRING"/>
+                            <email.getEmailAttachments>
+                                <emailIndex>{$ctx:index1}</emailIndex>
+                                <attachmentIndex>{$ctx:index2}</attachmentIndex>
+                            </email.getEmailAttachments>
+                            <log level="full"/>
+                        </sequence>
+                    </foreach>
+                </sequence>
+            </foreach>
+        </inSequence>
+        <outSequence/>
+    </target>
+</proxy>
