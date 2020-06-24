@@ -15,7 +15,7 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<template xmlns="http://ws.apache.org/ns/synapse" name="getEmailAttachments">
+<template xmlns="http://ws.apache.org/ns/synapse" name="getEmailAttachment">
 	<parameter name="emailIndex" description="Index of the email to be retrieved in the email response"/>
 	<parameter name="attachmentIndex" description="Index of the attachment to be retrieved in the email response"/>
 	<sequence>

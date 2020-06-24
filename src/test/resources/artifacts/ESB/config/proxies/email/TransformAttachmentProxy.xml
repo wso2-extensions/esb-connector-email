@@ -21,10 +21,10 @@
                     <foreach expression="//email/attachments/attachment">
                         <sequence>
                             <property expression="//attachment/index/text()" name="index2" scope="default" type="STRING"/>
-                            <email.getEmailAttachments>
+                            <email.getEmailAttachment>
                                 <emailIndex>{$ctx:index1}</emailIndex>
                                 <attachmentIndex>{$ctx:index2}</attachmentIndex>
-                            </email.getEmailAttachments>
+                            </email.getEmailAttachment>
                             <datamapper config="gov:datamapper/NewConfig2.dmc" inputSchema="gov:datamapper/NewConfig2_inputSchema.json" inputType="CSV" outputSchema="gov:datamapper/NewConfig2_outputSchema.json" outputType="JSON" xsltStyleSheet="gov:datamapper/NewConfig2_xsltStyleSheet.xml"/>
                             <log level="full"/>
                         </sequence>

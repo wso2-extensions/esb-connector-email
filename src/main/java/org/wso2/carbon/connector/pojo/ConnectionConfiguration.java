@@ -86,7 +86,7 @@ public class ConnectionConfiguration {
 
     public void setConnectionName(String connectionName) throws InvalidConfigurationException {
 
-        if (StringUtils.isNumeric(connectionName)) {
+        if (StringUtils.isEmpty(connectionName) || StringUtils.isNumeric(connectionName)) {
             throw new InvalidConfigurationException("Mandatory parameter 'connectionName' is not set.");
         }
         this.connectionName = connectionName;

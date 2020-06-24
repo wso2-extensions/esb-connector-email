@@ -150,6 +150,7 @@ public class ReceiveEmailTest extends ConnectorIntegrationTestBase {
     public void testCheckingForEmailPeriodically() throws Exception {
 
         GreenMailServer.getInstance().clear();
+        EmailTestUtils.sendSampleEmail(EmailTestUtils.Constants.PROTOCOL_IMAP);
         OMElement task = AXIOMUtil.stringToOM("<task:task xmlns:task=\"http://www.wso2.org/products/wso2commons/tasks\"\n" +
                 "           name=\"EmailSequenceTask\"\n" +
                 "           class=\"org.apache.synapse.startup.tasks.MessageInjector\" group=\"synapse.simple.quartz\">\n" +
@@ -163,7 +164,6 @@ public class ReceiveEmailTest extends ConnectorIntegrationTestBase {
 
         logViewerClient.clearLogs();
         addScheduledTask(task);
-        EmailTestUtils.sendSampleEmail(EmailTestUtils.Constants.PROTOCOL_IMAP);
         TimeUnit.SECONDS.sleep(10);
         assertTrue(Utils.checkForLog(logViewerClient, "<index>0</index>", 10000));
     }

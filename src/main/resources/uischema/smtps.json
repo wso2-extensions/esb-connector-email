@@ -1,6 +1,6 @@
 {
   "connectorName": "email",
-  "connectionName": "smtps",
+  "connectionName": "SMTPS",
   "title": "SMTP Secured Connection",
   "help": "<h1>Email Connector</h1> <b>The email connector supports IMAP, POP3 and SMTP protocols for handling emails</b>",
   "elements": [
@@ -31,7 +31,7 @@
                   "value": {
                     "name": "host",
                     "displayName": "Host",
-                    "inputType": "stringOrExpresion",
+                    "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "Host name of the mail server"
@@ -42,7 +42,7 @@
                   "value": {
                     "name": "port",
                     "displayName": "Port",
-                    "inputType": "stringOrExpresion",
+                    "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "The port number of the mail server"
@@ -53,7 +53,7 @@
                   "value": {
                     "name": "username",
                     "displayName": "Username",
-                    "inputType": "stringOrExpresion",
+                    "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "Username used to connect with the mail server"
@@ -64,21 +64,10 @@
                   "value": {
                     "name": "password",
                     "displayName": "Password",
-                    "inputType": "stringOrExpresion",
+                    "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "Password to connect with the mail server"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "protocol",
-                    "displayName": "Protocol",
-                    "inputType": "stringOrExpresion",
-                    "defaultValue": "",
-                    "required": "true",
-                    "helpTip": "Email protocol that should be used to establish the connection with the server"
                   }
                 }
               ]
@@ -97,7 +86,7 @@
             "value": {
               "name": "readTimeout",
               "displayName": "Read Timeout",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The socket read timeout value"
@@ -108,7 +97,7 @@
             "value": {
               "name": "connectionTimeout",
               "displayName": "Connection Timeout",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The socket connection timeout value"
@@ -119,7 +108,7 @@
             "value": {
               "name": "writeTimeout",
               "displayName": "Write Timeout",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The socket write timeout value"
@@ -152,7 +141,7 @@
             "value": {
               "name": "trustedHosts",
               "displayName": "Trusted Hosts",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Comma separated string of trust host names"
@@ -163,7 +152,7 @@
             "value": {
               "name": "sslProtocols",
               "displayName": "SSL Protocols",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Comma separated string of SSL protocol"
@@ -174,7 +163,7 @@
             "value": {
               "name": "cipherSuites",
               "displayName": "Cipher Suites",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Comma separated string of Cipher Suites"
@@ -185,7 +174,7 @@
             "value": {
               "name": "maxActiveConnections",
               "displayName": "Max Active Connections",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Maximum number of active connections in the pool"
@@ -196,7 +185,7 @@
             "value": {
               "name": "maxIdleConnections",
               "displayName": "Max Idle Connections",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Maximum number of idle connections in the pool"
@@ -207,7 +196,7 @@
             "value": {
               "name": "maxWaitTime",
               "displayName": "Max Wait Time",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"Maximum time to wait for a pooled component to become available"
@@ -218,7 +207,7 @@
             "value": {
               "name": "minEvictionTime",
               "displayName": "Min Eviction Time",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
@@ -229,7 +218,7 @@
             "value": {
               "name": "evictionCheckInterval",
               "displayName": "Eviction Check Interval",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The number of milliseconds between runs of the object evictor"
@@ -240,7 +229,7 @@
             "value": {
               "name": "exhaustedAction",
               "displayName": "Exhausted Action",
-              "inputType": "stringOrExpresion",
+              "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
               "helpTip":"The behavior of the pool when the pool is exhausted"

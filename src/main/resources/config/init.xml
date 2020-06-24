@@ -16,7 +16,7 @@
    specific language governing permissions and limitations
    under the License.
 -->
-<template name="connection" onError="fault" xmlns="http://ws.apache.org/ns/synapse">
+<template name="init" onError="fault" xmlns="http://ws.apache.org/ns/synapse">
 	<parameter name="host" description="Host name of the mail server"/>
 	<parameter name="port" description="The port number of the mail server"/>
 	<parameter name="name" description="Unique name the connection is identified by"/>

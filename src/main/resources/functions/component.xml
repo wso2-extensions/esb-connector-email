@@ -46,8 +46,8 @@
 			<file>getEmailBody.xml</file>
 			<description>Retrieves email body by index.</description>
 		</component>
-		<component name="getEmailAttachments" >
-			<file>getEmailAttachments.xml</file>
+		<component name="getEmailAttachment" >
+			<file>getEmailAttachment.xml</file>
 			<description>Retrieves email attachment by index.</description>
 		</component>
     </subComponents>    

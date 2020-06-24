@@ -284,7 +284,7 @@ When `getEmailBody` operation is invoked, below properties are set in the messag
 * TEXT_CONTENT: Text content of the email.
 
 ### Get Email Attachments
-We can use `getEmailAttachments` operation to retrieve the attachment content.
+We can use `getEmailAttachment` operation to retrieve the attachment content.
 
 > **NOTE: To use this operation, `list` operation MUST be invoked first**. 
 
@@ -324,12 +324,12 @@ Therefore, when the `list` operation is invoked the following response is set in
 
 **Get Email Attachment**
 
-When calling the `getEmailAttachments` we should specify the email index of the email and the attachment index we need to retrieve according to the response from `list` operation.
+When calling the `getEmailAttachment` we should specify the email index of the email and the attachment index we need to retrieve according to the response from `list` operation.
 ```xml
-<email.getEmailAttachments>
+<email.getEmailAttachment>
     <emailIndex>0</emailIndex>
     <attachmentIndex>0</attachmentIndex>
-</email.getEmailAttachments>
+</email.getEmailAttachment>
 ```
 
 **Parameters**
@@ -351,7 +351,7 @@ Given below is a sample.
 
 ```
 
-When `getEmailAttachments` operation is invoked, below properties are set in the message context.
+When `getEmailAttachment` operation is invoked, below properties are set in the message context.
 
 **Properties**
 
@@ -410,10 +410,10 @@ transports="http https" xmlns="http://ws.apache.org/ns/synapse">
                     <foreach expression="//email/attachments/attachment">
                         <sequence>
                             <property expression="//attachment/index/text()" name="index2" scope="default" type="STRING"/>
-                            <email.getEmailAttachments>
+                            <email.getEmailAttachment>
                                 <emailIndex>{$ctx:index1}</emailIndex>
                                 <attachmentIndex>{$ctx:index2}</attachmentIndex>
-                            </email.getEmailAttachments>
+                            </email.getEmailAttachment>
                             <log level="full"/>
                         </sequence>
                     </foreach>

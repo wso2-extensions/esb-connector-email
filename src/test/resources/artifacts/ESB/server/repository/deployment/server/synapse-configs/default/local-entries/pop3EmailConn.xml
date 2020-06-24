@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><localEntry xmlns="http://ws.apache.org/ns/synapse" key="pop3EmailConn">
-    <email.connection>
+    <email.init>
         <host>127.0.0.1</host>
         <port>3110</port>
         <connectionType>POP3</connectionType>
         <name>pop3EmailConn</name>
         <username>wso2test</username>
         <password>wso2test</password>
-    </email.connection>
+    </email.init>
     <description/>
 </localEntry>

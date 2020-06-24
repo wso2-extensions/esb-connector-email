@@ -58,9 +58,7 @@ When calling the `send` operation the value configured for `name` parameter in t
 * contentType [optional]: Content Type of the body text.
 * encoding [optional]: The character encoding of the body.
 * attachments [optional]: The attachments that are sent along with the email body.
-* contentTransferEncoding [optional]: The index from which to retrieve emails.
-* limit [optional]: The number of emails to be retrieved.
-* folder [optional]: Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport.
+* contentTransferEncoding [optional]: Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport.
 
 **Sample request**
 

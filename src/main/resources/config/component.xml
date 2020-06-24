@@ -18,8 +18,8 @@
 -->
 <component name="config" type="synapse/template" >
     <subComponents> 
-		<component name="connection" >
-	    		<file>connection.xml</file>
+		<component name="init" >
+	    		<file>init.xml</file>
 	    		<description>Init operation</description>
 		</component>
     </subComponents>    

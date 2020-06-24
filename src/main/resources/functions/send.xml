@@ -22,7 +22,6 @@
     <parameter name="bcc" description="The recipient addresses of 'BCC' (blind carbon copy) type"/>
     <parameter name="replyTo" description="The email addresses to which to reply to this email"/>
     <parameter name="subject" description="The subject of the email"/>
-    <parameter name="headers" description="The headers that this email carries"/>
     <parameter name="content" description="Body of the message in any format"/>
     <parameter name="contentType" description="Content Type of the body text"/>
     <parameter name="encoding" description="The character encoding of the body"/>

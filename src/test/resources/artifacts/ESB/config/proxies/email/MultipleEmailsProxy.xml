@@ -30,10 +30,10 @@
                     <foreach expression="//email/attachments/attachment">
                         <sequence>
                             <property expression="//attachment/index/text()" name="index2" scope="default" type="STRING"/>
-                            <email.getEmailAttachments>
+                            <email.getEmailAttachment>
                                 <emailIndex>{$ctx:index1}</emailIndex>
                                 <attachmentIndex>{$ctx:index2}</attachmentIndex>
-                            </email.getEmailAttachments>
+                            </email.getEmailAttachment>
                             <log level="full"/>
                         </sequence>
                     </foreach>

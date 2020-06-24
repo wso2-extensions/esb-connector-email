@@ -157,7 +157,6 @@ public class EmailList extends AbstractConnector {
             emailsElement.addChild(emailElement);
         }
         PayloadUtils.setPayloadInEnvelope(axis2MsgCtx, emailsElement);
-        PayloadUtils.handleSpecialProperties(ResponseConstants.RESPONSE_CONTENT_TYPE, axis2MsgCtx);
     }
 
     /**

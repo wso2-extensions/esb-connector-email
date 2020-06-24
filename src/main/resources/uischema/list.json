@@ -61,7 +61,7 @@
                     "displayName": "Offset",
                     "inputType": "stringOrExpression",
                     "defaultValue": "0",
-                    "required": "true",
+                    "required": "false",
                     "helpTip": "The index from which to retrieve emails"
                   }
                 },
@@ -72,7 +72,7 @@
                     "displayName": "Limit",
                     "inputType": "stringOrExpression",
                     "defaultValue": "10",
-                    "required": "true",
+                    "required": "false",
                     "helpTip": "The number of emails to be retrieved"
                   }
                 }
