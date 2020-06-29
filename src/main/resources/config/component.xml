@@ -19,8 +19,9 @@
 <component name="config" type="synapse/template" >
     <subComponents> 
 		<component name="init" >
-	    		<file>init.xml</file>
-	    		<description>Init operation</description>
+			<file>init.xml</file>
+			<description>Init operation</description>
+			<hidden>true</hidden>
 		</component>
     </subComponents>    
 </component>
