@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?><localEntry xmlns="http://ws.apache.org/ns/synapse" key="sendEmailConn">
+    <email.init>
+        <host>127.0.0.1</host>
+        <port>3025</port>
+        <connectionType>SMTP</connectionType>
+        <name>sendEmailConn</name>
+        <username>wso2</username>
+        <password>wso2</password>
+    </email.init>
+<description/>
+</localEntry>

@@ -19,5 +19,20 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Ignore Intellij-IDEA files
+*.iml
+*.ipr
+*.iws
+*.classpath
+*.settings
+*.project
+*.idea
+
+# Virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# Ignore target directories
+target/
+
+## Various other file types we don't want to have in the repository:
+.DS_Store

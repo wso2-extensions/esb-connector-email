@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<proxy name="ExpungeFolderProxy" startOnLoad="true" transports="http https" xmlns="http://ws.apache.org/ns/synapse">
+    <target faultSequence="fault">
+        <inSequence>
+            <email.expungeFolder configKey="imapEmailConn">
+            </email.expungeFolder>
+            <respond/>
+        </inSequence>
+        <outSequence/>
+    </target>
+</proxy>
