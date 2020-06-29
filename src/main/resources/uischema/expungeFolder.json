@@ -16,8 +16,8 @@
               "displayName": "Connection",
               "inputType": "connection",
               "allowedConnectionTypes": [
-                "imap",
-                "imaps"
+                "IMAP",
+                "IMAPS"
               ],
               "defaultType": "connection.imap",
               "defaultValue": "",

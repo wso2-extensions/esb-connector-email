@@ -16,8 +16,8 @@
               "displayName": "Connection",
               "inputType": "connection",
               "allowedConnectionTypes": [
-                "smtp",
-                "smtps"
+                "SMTP",
+                "SMTPS"
               ],
               "defaultType": "connection.smtp",
               "defaultValue": "",
