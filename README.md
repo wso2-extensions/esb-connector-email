@@ -8,16 +8,9 @@ The Email Connector allows you to list, send emails and perform other actions su
 | ------------- |------------- |
 |  [1.0.0](https://github.com/wso2-extensions/esb-connector-email/tree/org.wso2.carbon.connector.emailconnector-1.0.0)        |  EI 6.5.0, EI 6.6.0, EI 7.0.x |
 
-#### Download and install the connector
+## Documentation
 
-1. Download the connector from the [WSO2 Store]() by clicking the **Download Connector** button.
-2. You can then follow this [documentation](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+the+Management+Console) to add the connector to your WSO2 EI instance and to enable it (via the management console).
-3. For more information on using connectors and their operations in your WSO2 EI configurations, see [Using a Connector](https://docs.wso2.com/display/EI650/Using+a+Connector).
-4. If you want to work with connectors via WSO2 EI Tooling, see [Working with Connectors via Tooling](https://docs.wso2.com/display/EI650/Working+with+Connectors+via+Tooling).
-
-#### Configuring the connector operations
-
-To get started with Email connector and their operations, see [Configuring the Email Connector](docs/config.md).
+Please refer to documentation [here](https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/email-connector/email-connector-overview/).
 
 ## Building from the source
 
