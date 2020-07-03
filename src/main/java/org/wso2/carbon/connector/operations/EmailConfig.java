@@ -88,18 +88,6 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
                 EmailConstants.SSL_PROTOCOLS);
         String cipherSuites = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
                 EmailConstants.CIPHER_SUITES);
-        String maxActiveConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.MAX_ACTIVE_CONNECTIONS);
-        String maxIdleConnections = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.MAX_IDLE_CONNECTIONS);
-        String maxWaitTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.MAX_WAIT_TIME);
-        String minEvictionTime = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.MAX_EVICTION_TIME);
-        String evictionCheckInterval = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.EVICTION_CHECK_INTERVAL);
-        String exhaustedAction = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
-                EmailConstants.EXHAUSTED_ACTION);
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         connectionConfiguration.setHost(host);
@@ -116,25 +104,7 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
         connectionConfiguration.setTrustedHosts(trustedHosts);
         connectionConfiguration.setSslProtocols(sslProtocols);
         connectionConfiguration.setCipherSuites(cipherSuites);
-
-        if (maxActiveConnections != null) {
-            connectionConfiguration.setMaxActiveConnections(Integer.parseInt(maxActiveConnections));
-        }
-        if (maxWaitTime != null) {
-            connectionConfiguration.setMaxWaitTime(Long.parseLong(maxWaitTime));
-        }
-        if (maxIdleConnections != null) {
-            connectionConfiguration.setMaxIdleConnections(Integer.parseInt(maxIdleConnections));
-        }
-        if (minEvictionTime != null) {
-            connectionConfiguration.setMinEvictionTime(Long.parseLong(minEvictionTime));
-        }
-        if (evictionCheckInterval != null) {
-            connectionConfiguration.setEvictionCheckInterval(Long.parseLong(evictionCheckInterval));
-        }
-        if (exhaustedAction != null) {
-            connectionConfiguration.setExhaustedAction(exhaustedAction);
-        }
+        connectionConfiguration.setConfiguration(ConnectorUtils.getPoolConfiguration(messageContext));
 
         return connectionConfiguration;
     }
