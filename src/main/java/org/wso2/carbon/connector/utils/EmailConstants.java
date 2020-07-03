@@ -64,12 +64,6 @@ public final class EmailConstants {
     public static final String TRUSTED_HOSTS = "trustedHosts";
     public static final String SSL_PROTOCOLS = "sslProtocols";
     public static final String CIPHER_SUITES = "cipherSuites";
-    public static final String MAX_ACTIVE_CONNECTIONS = "maxActiveConnections";
-    public static final String MAX_IDLE_CONNECTIONS = "maxIdleConnections";
-    public static final String MAX_WAIT_TIME = "maxWaitTime";
-    public static final String MAX_EVICTION_TIME = "minEvictionTime";
-    public static final String EVICTION_CHECK_INTERVAL = "evictionCheckInterval";
-    public static final String EXHAUSTED_ACTION = "exhaustedAction";
     // Default email configuration values
     public static final String DEFAULT_SOCKETFACTORY_FALLBACK = "false";
     public static final String DEFAULT_FOLDER = "INBOX";
