@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.emailconnector</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>WSO2 Carbon - Connector For email</name>
     <url>http://wso2.org</url>
@@ -239,7 +239,7 @@
                             <goal>attached</goal>
                         </goals>
                         <configuration>
-                            <finalName>${connector.name}-connector-1.0.0</finalName>
+                            <finalName>${connector.name}-connector-${version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <filters>
                                 <filter>src/main/assembly/filter.properties</filter>
