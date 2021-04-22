@@ -17,6 +17,7 @@
  */
 package org.wso2.carbon.connector.operations;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -88,11 +89,14 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
                 EmailConstants.SSL_PROTOCOLS);
         String cipherSuites = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
                 EmailConstants.CIPHER_SUITES);
+        String requireAuthentication = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.REQUIRE_AUTHENTICATION);
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         connectionConfiguration.setHost(host);
         connectionConfiguration.setPort(port);
         connectionConfiguration.setConnectionName(connectionName);
+        connectionConfiguration.setRequireAuthentication(requireAuthentication);
         connectionConfiguration.setPassword(password);
         connectionConfiguration.setProtocol(protocol);
         connectionConfiguration.setReadTimeout(readTimeout);
