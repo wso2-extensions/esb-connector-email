@@ -6,6 +6,7 @@ The Email Connector allows you to list, send emails and perform other actions su
 
 | Connector version | Supported WSO2 ESB/EI version |
 | ------------- |------------- |
+|  [1.0.1](https://github.com/wso2-extensions/esb-connector-email/tree/v1.0.1)        |  EI 6.6.0, EI 7.0.x, EI 7.1 |
 |  [1.0.0](https://github.com/wso2-extensions/esb-connector-email/tree/v1.0.0)        |  EI 6.6.0, EI 7.0.x |
 
 ## Documentation
