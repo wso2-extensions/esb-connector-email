@@ -37,6 +37,7 @@
 	<parameter name="minEvictionTime" description="The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"/>
 	<parameter name="evictionCheckInterval" description="The number of milliseconds between runs of the object evictor"/>
 	<parameter name="exhaustedAction" description="The behavior of the pool when the pool is exhausted."/>
+	<parameter name="requireAuthentication" description="Whether authentication is required for SMTP server."/>
 	<sequence>
 		<property name="host" expression="$func:host"/>
 		<property name="port" expression="$func:port"/>
@@ -58,6 +59,7 @@
 		<property name="minEvictionTime" expression="$func:minEvictionTime"/>
 		<property name="evictionCheckInterval" expression="$func:evictionCheckInterval"/>
 		<property name="exhaustedAction" expression="$func:exhaustedAction"/>
+		<property name="requireAuthentication" expression="$func:requireAuthentication"/>
 		<class name="org.wso2.carbon.connector.operations.EmailConfig" />
 	</sequence>
 </template>

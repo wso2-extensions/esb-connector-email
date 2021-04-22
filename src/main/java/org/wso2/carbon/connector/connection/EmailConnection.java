@@ -41,7 +41,7 @@ public class EmailConnection implements Connection {
 
         this.protocol = connectionConfiguration.getProtocol();
         Properties sessionProperties = setSessionProperties(connectionConfiguration.getHost(),
-                connectionConfiguration.getPort());
+                connectionConfiguration.getPort(), connectionConfiguration.getRequireAuthentication());
         sessionProperties.putAll(setTimeouts(connectionConfiguration.getReadTimeout(),
                 connectionConfiguration.getWriteTimeout(), connectionConfiguration.getConnectionTimeout()));
 
@@ -49,15 +49,19 @@ public class EmailConnection implements Connection {
             sessionProperties.putAll(setSecureProperties(connectionConfiguration));
         }
 
-        this.session = Session.getInstance(sessionProperties,
-                new javax.mail.Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
+        if (connectionConfiguration.getRequireAuthentication()) {
+            this.session = Session.getInstance(sessionProperties,
+                    new javax.mail.Authenticator() {
+                        @Override
+                        protected PasswordAuthentication getPasswordAuthentication() {
 
-                        return new PasswordAuthentication(connectionConfiguration.getUsername(),
-                                connectionConfiguration.getPassword());
-                    }
-                });
+                            return new PasswordAuthentication(connectionConfiguration.getUsername(),
+                                    connectionConfiguration.getPassword());
+                        }
+                    });
+        } else {
+            this.session = Session.getInstance(sessionProperties, null);
+        }
     }
 
     public Session getSession() {
@@ -72,13 +76,13 @@ public class EmailConnection implements Connection {
      * @param port Port to connect to
      * @return Properties configured
      */
-    private Properties setSessionProperties(String host, String port) {
+    private Properties setSessionProperties(String host, String port, Boolean requireAuthentication) {
 
         Properties props = new Properties();
         props.setProperty(protocol.getPortProperty(), port);
         props.setProperty(protocol.getHostProperty(), host);
         props.setProperty(protocol.getTransportProtocolProperty(), protocol.getName());
-        props.setProperty(protocol.getMailAuthProperty(), TRUE);
+        props.setProperty(protocol.getMailAuthProperty(), String.valueOf(requireAuthentication));
         return props;
     }
 

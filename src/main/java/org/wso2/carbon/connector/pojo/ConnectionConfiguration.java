@@ -37,6 +37,7 @@ public class ConnectionConfiguration {
     private String connectionTimeout;
     private String writeTimeout;
     private boolean requireTLS;
+    private boolean requireAuthentication = true;
     private boolean checkServerIdentity;
     private String trustedHosts;
     private String sslProtocols;
@@ -99,8 +100,8 @@ public class ConnectionConfiguration {
 
     public void setUsername(String username) throws InvalidConfigurationException {
 
-        if (StringUtils.isEmpty(username)) {
-            throw new InvalidConfigurationException("Mandatory parameter 'username' is not set.");
+        if (StringUtils.isEmpty(username) && getRequireAuthentication()) {
+            throw new InvalidConfigurationException("Server requires authentication, mandatory parameter 'username' is not set.");
         }
         this.username = username;
     }
@@ -112,8 +113,8 @@ public class ConnectionConfiguration {
 
     public void setPassword(String password) throws InvalidConfigurationException {
 
-        if (StringUtils.isEmpty(password)) {
-            throw new InvalidConfigurationException("Mandatory parameter 'password' is not set.");
+        if (StringUtils.isEmpty(password) && getRequireAuthentication()) {
+            throw new InvalidConfigurationException("Server requires authentication, mandatory parameter 'password' is not set.");
         }
         this.password = password;
     }
@@ -297,5 +298,17 @@ public class ConnectionConfiguration {
     public void setConfiguration(Configuration configuration) {
 
         this.configuration = configuration;
+    }
+
+    public void setRequireAuthentication(String requireAuthentication) {
+
+        if (!StringUtils.isEmpty(requireAuthentication)) {
+            this.requireAuthentication = Boolean.parseBoolean(requireAuthentication);
+        }
+    }
+
+    public Boolean getRequireAuthentication() {
+
+        return requireAuthentication;
     }
 }

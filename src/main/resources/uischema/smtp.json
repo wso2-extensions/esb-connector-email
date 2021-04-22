@@ -51,11 +51,22 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "requireAuthentication",
+                    "displayName": "Require Authentication",
+                    "inputType": "booleanOrExpression",
+                    "defaultValue": "true",
+                    "required": "true",
+                    "helpTip": "Whether authentication is required to connect with SMTP server"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "username",
                     "displayName": "Username",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "true",
+                    "required": "false",
                     "helpTip": "Username used to connect with the mail server"
                   }
                 },
@@ -66,7 +77,7 @@
                     "displayName": "Password",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "true",
+                    "required": "false",
                     "helpTip": "Password to connect with the mail server"
                   }
                 }
