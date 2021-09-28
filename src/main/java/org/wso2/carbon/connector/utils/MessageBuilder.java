@@ -17,14 +17,20 @@
  */
 package org.wso2.carbon.connector.utils;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.activation.DataHandler;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -49,6 +55,8 @@ public final class MessageBuilder {
     private static final String DEFAULT_CONTENT_TYPE = "text/html";
     private static final String DEFAULT_ENCODING = "UTF-8";
     private static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "Base64";
+    private static final String REGEX = "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)";
+    private static final Pattern pattern = Pattern.compile(REGEX);
 
     private final MimeMessage message;
 
@@ -242,9 +250,21 @@ public final class MessageBuilder {
             MimeBodyPart body = new MimeBodyPart();
             setMessageContent(body);
             multipart.addBodyPart(body);
-            String[] attachFiles = attachments.split(",");
-            for (String filePath : attachFiles) {
-                addAttachment(multipart, filePath);
+            //check whether the attachment is a json array.
+            if (attachments.startsWith("[")) {
+                try {
+                    JSONArray attachmentsArray = new JSONArray(attachments);
+                    for (int i = 0; i < attachmentsArray.length(); i++) {
+                        addAttachment(multipart, attachmentsArray.getJSONObject(i));
+                    }
+                } catch (JSONException e) {
+                    throw new IOException("Invalid JSON data format.", e);
+                }
+            } else {
+                String[] attachFiles = attachments.split(",");
+                for (String filePath : attachFiles) {
+                    addAttachment(multipart, filePath);
+                }
             }
             message.setContent(multipart, MULTIPART_TYPE);
         } else {
@@ -293,6 +313,42 @@ public final class MessageBuilder {
             part.setHeader(CONTENT_TRANSFER_ENCODING_HEADER, this.contentTransferEncoding);
             multipart.addBodyPart(part);
         }
+    }
+
+    /**
+     * Get content from request body and add the attachment
+     *
+     * @param multipart Multi part body the messages should be added to
+     * @param attachment  the attachment
+     * @throws MessagingException if failed to set attachments
+     * @throws IOException        if an error occurred while reading attachment content
+     */
+    private void addAttachment(MimeMultipart multipart, JSONObject attachment) throws MessagingException, IOException {
+
+        try {
+            String attachmentName = (String) attachment.get(EmailConstants.ATTACHMENT_FILE_NAME);
+            MimeBodyPart part = new MimeBodyPart();
+            String fileContent = (String) attachment.get(EmailConstants.ATTACHMENT_FILE_CONTENT);
+            try (InputStream bain = new ByteArrayInputStream(isBase64(fileContent) ?
+                    Base64.decodeBase64(fileContent.getBytes()) : fileContent.getBytes())) {
+                part.setDisposition(ATTACHMENT);
+                part.setFileName(attachmentName);
+                Tika tika = new Tika();
+                String fileContentType = tika.detect(bain);
+                DataHandler dataHandler = new DataHandler(new EmailAttachmentDataSource(attachmentName, bain,
+                        fileContentType));
+                part.setDataHandler(dataHandler);
+                part.setHeader(CONTENT_TYPE_HEADER, dataHandler.getContentType());
+                part.setHeader(CONTENT_TRANSFER_ENCODING_HEADER, this.contentTransferEncoding);
+                multipart.addBodyPart(part);
+            }
+        } catch (JSONException e) {
+            throw new IOException("Invalid JSON data format.", e);
+        }
+    }
+
+    private boolean isBase64(String stringBase64){
+        return pattern.matcher(stringBase64).matches();
     }
 
     /**
