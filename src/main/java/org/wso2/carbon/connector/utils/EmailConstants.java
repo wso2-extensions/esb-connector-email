@@ -65,6 +65,8 @@ public final class EmailConstants {
     public static final String SSL_PROTOCOLS = "sslProtocols";
     public static final String CIPHER_SUITES = "cipherSuites";
     public static final String REQUIRE_AUTHENTICATION = "requireAuthentication";
+    public static final String ATTACHMENT_FILE_NAME = "name";
+    public static final String ATTACHMENT_FILE_CONTENT = "content";
     // Default email configuration values
     public static final String DEFAULT_SOCKETFACTORY_FALLBACK = "false";
     public static final String DEFAULT_FOLDER = "INBOX";
