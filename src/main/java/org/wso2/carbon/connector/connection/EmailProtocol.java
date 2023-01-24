@@ -235,6 +235,18 @@ public enum EmailProtocol {
         return unmaskProperty(EmailConnectionConstants.PROPERTY_CHECK_SERVER_IDENTITY);
     }
 
+    /**
+     * Specifies the mail authorization mechanisms.
+     * Default is set to "PLAIN LOGIN NTLM"
+     * Inorder to enable OAUTH2, this should be set to "XOAUTH2"
+     *
+     * @return the mail auth mechanisms property
+     */
+    public String getAuthMechanismsProperty() {
+
+        return unmaskProperty(EmailConnectionConstants.PROPERTY_AUTH_MECHANISMS);
+    }
+
     private String unmaskProperty(String property) {
 
         return format(property, name);

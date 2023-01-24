@@ -17,15 +17,16 @@
  */
 package org.wso2.carbon.connector.operations;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.core.AbstractConnector;
-import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
+import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
+import org.wso2.carbon.connector.pojo.OAuthConfig;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
@@ -44,6 +45,9 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
         } catch (InvalidConfigurationException e) {
             EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
             handleException("Failed to initiate email configuration.", e, messageContext);
+        } catch (EmailConnectionException e) {
+            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            handleException("An error occurred in email connection creation.", e, messageContext);
         }
     }
 
@@ -55,7 +59,7 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
     @Override
     public void destroy() {
 
-        ConnectionHandler.getConnectionHandler().shutdownConnections(EmailConstants.CONNECTOR_NAME);
+        EmailConnectionHandler.getConnectionHandler().shutdownConnectorConnections();
     }
 
     /**
@@ -91,12 +95,19 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
                 EmailConstants.CIPHER_SUITES);
         String requireAuthentication = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
                 EmailConstants.REQUIRE_AUTHENTICATION);
+        String enableOAuth2 = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.ENABLE_OAUTH2_AUTHENTICATION);
 
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         connectionConfiguration.setHost(host);
         connectionConfiguration.setPort(port);
         connectionConfiguration.setConnectionName(connectionName);
         connectionConfiguration.setRequireAuthentication(requireAuthentication);
+        connectionConfiguration.setEnableOAuth2Authentication(enableOAuth2);
+        if (Boolean.parseBoolean(enableOAuth2)) {
+            OAuthConfig oAuthConfig = generateOAuthConfig(messageContext, connectionName);
+            connectionConfiguration.setOAuthConfig(oAuthConfig);
+        }
         connectionConfiguration.setPassword(password);
         connectionConfiguration.setProtocol(protocol);
         connectionConfiguration.setReadTimeout(readTimeout);
@@ -111,5 +122,30 @@ public class EmailConfig extends AbstractConnector implements ManagedLifecycle {
         connectionConfiguration.setConfiguration(ConnectorUtils.getPoolConfiguration(messageContext));
 
         return connectionConfiguration;
+    }
+
+    private static OAuthConfig generateOAuthConfig(MessageContext messageContext, String connectionName) {
+        String grantType = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.GRANT_TYPE);
+        String clientID = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.CLIENT_ID);
+        String clientSecret = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.CLIENT_SECRET);
+        String refreshToken = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.REFRESH_TOKEN);
+        String tokenUrl = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.TOKEN_URL);
+        String scope = (String) ConnectorUtils.lookupTemplateParamater(messageContext,
+                EmailConstants.SCOPE);
+        String tokenId = EmailUtils.getTokenID(connectionName);
+        OAuthConfig oAuthConfig = new OAuthConfig();
+        oAuthConfig.setGrantType(grantType);
+        oAuthConfig.setClientId(clientID);
+        oAuthConfig.setClientSecret(clientSecret);
+        oAuthConfig.setRefreshToken(refreshToken);
+        oAuthConfig.setTokenUrl(tokenUrl);
+        oAuthConfig.setScope(scope);
+        oAuthConfig.setTokenId(tokenId);
+        return oAuthConfig;
     }
 }
