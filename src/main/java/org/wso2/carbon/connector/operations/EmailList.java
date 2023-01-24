@@ -25,7 +25,7 @@ import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
 import org.wso2.carbon.connector.core.util.PayloadUtils;
@@ -90,12 +90,11 @@ public class EmailList extends AbstractConnector {
         String errorString = "Error occurred while retrieving messages from folder: %s.";
         String connectionName = null;
         String folderName = StringUtils.EMPTY;
-        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
         try {
             connectionName = EmailUtils.getConnectionName(messageContext);
-            connection = (MailBoxConnection) handler
-                    .getConnection(EmailConstants.CONNECTOR_NAME, connectionName);
+            connection = (MailBoxConnection) handler.getConnection(connectionName);
             MailboxConfiguration mailboxConfiguration = getMailboxConfigFromContext(messageContext);
             folderName = mailboxConfiguration.getFolder();
             List<EmailMessage> messageList = retrieveMessages(connection, mailboxConfiguration);
@@ -112,7 +111,7 @@ public class EmailList extends AbstractConnector {
             handleException(format(errorString, folderName), e, messageContext);
         } finally {
             if (connection != null) {
-                handler.returnConnection(EmailConstants.CONNECTOR_NAME, connectionName, connection);
+                handler.returnConnection(connectionName, connection);
             }
         }
     }

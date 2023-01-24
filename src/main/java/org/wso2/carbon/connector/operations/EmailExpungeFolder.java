@@ -19,10 +19,10 @@ package org.wso2.carbon.connector.operations;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
@@ -45,15 +45,14 @@ public class EmailExpungeFolder extends AbstractConnector {
         String errorString = "Error occurred while expunging folder: %s.";
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
         String connectionName = null;
-        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
         try {
             if (StringUtils.isEmpty(folder)) {
                 folder = EmailConstants.DEFAULT_FOLDER;
             }
             connectionName = EmailUtils.getConnectionName(messageContext);
-            connection = (MailBoxConnection) handler
-                    .getConnection(EmailConstants.CONNECTOR_NAME, connectionName);
+            connection = (MailBoxConnection) handler.getConnection(connectionName);
             expungeFolder(connection, folder);
             if (log.isDebugEnabled()) {
                 log.debug(format("Expunged folder: %s...", folder));
@@ -70,7 +69,7 @@ public class EmailExpungeFolder extends AbstractConnector {
             handleException(format(errorString, folder), e, messageContext);
         } finally {
             if (connection != null) {
-                handler.returnConnection(EmailConstants.CONNECTOR_NAME, connectionName, connection);
+                handler.returnConnection(connectionName, connection);
             }
         }
     }
