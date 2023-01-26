@@ -38,6 +38,7 @@ public final class EmailConnectionConstants {
     public static final String PROPERTY_CONNECTION_TIMEOUT = "mail.%s.connectiontimeout";
     public static final String PROPERTY_WRITE_TIMEOUT = "mail.%s.writetimeout";
     public static final String PROPERTY_CHECK_SERVER_IDENTITY = "mail.%s.ssl.checkserveridentity";
+    public static final String PROPERTY_AUTH_MECHANISMS = "mail.%s.auth.mechanisms";
 
     private EmailConnectionConstants() {
 

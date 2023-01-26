@@ -17,13 +17,21 @@
  */
 package org.wso2.carbon.connector.connection;
 
-import org.wso2.carbon.connector.core.connection.Connection;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.wso2.carbon.connector.connection.oauth.OAuthUtils;
+import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.core.connection.ConnectionConfig;
+import org.wso2.carbon.connector.exception.EmailConnectionException;
+import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.utils.EmailConstants;
 
 import java.util.Properties;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+
+import static java.lang.String.format;
 
 /**
  * Represents an email connection
@@ -34,10 +42,12 @@ public class EmailConnection implements Connection {
     private static final String WHITESPACE_SEPARATOR = " ";
     private static final String TRUE = String.valueOf(Boolean.TRUE);
 
+    private static final Log log = LogFactory.getLog(EmailConnection.class);
+
     private Session session;
     private EmailProtocol protocol;
 
-    public EmailConnection(ConnectionConfiguration connectionConfiguration) {
+    public EmailConnection(ConnectionConfiguration connectionConfiguration) throws EmailConnectionException {
 
         this.protocol = connectionConfiguration.getProtocol();
         Properties sessionProperties = setSessionProperties(connectionConfiguration.getHost(),
@@ -49,7 +59,28 @@ public class EmailConnection implements Connection {
             sessionProperties.putAll(setSecureProperties(connectionConfiguration));
         }
 
+        if (connectionConfiguration.isOAuth2Enabled()) {
+            sessionProperties.setProperty(protocol.getAuthMechanismsProperty(), EmailConstants.AUTH_MECHANISM_XOAUTH2);
+        }
+
         if (connectionConfiguration.getRequireAuthentication()) {
+            if (connectionConfiguration.isOAuth2Enabled()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Attempting to connect to " + connectionConfiguration.getProtocol().getName() +
+                            " server for " + connectionConfiguration.getUsername() +
+                            " using grant-type : " + connectionConfiguration.getOAuthConfig().getGrantType());
+                }
+                try {
+                    String password = OAuthUtils.generateAccessToken(connectionConfiguration);
+                    connectionConfiguration.setPassword(password);
+                } catch (EmailConnectionException e) {
+                    log.error(e.getMessage());
+                    throw new EmailConnectionException(format("An error occurred while generating access token for " +
+                            "%s. " + e.getMessage(), connectionConfiguration.getUsername()), e);
+                } catch (InvalidConfigurationException e) {
+                    throw new EmailConnectionException("An error occurred while configuring connections", e);
+                }
+            }
             this.session = Session.getInstance(sessionProperties,
                     new javax.mail.Authenticator() {
                         @Override
@@ -163,4 +194,13 @@ public class EmailConnection implements Connection {
         return configString.replace(COMMA_SEPARATOR, WHITESPACE_SEPARATOR).trim();
     }
 
+    @Override
+    public void connect(ConnectionConfig config) throws ConnectException {
+
+    }
+
+    @Override
+    public void close() throws ConnectException {
+
+    }
 }

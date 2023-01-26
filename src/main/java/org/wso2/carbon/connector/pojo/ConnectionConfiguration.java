@@ -43,6 +43,8 @@ public class ConnectionConfiguration {
     private String sslProtocols;
     private String cipherSuites;
     private Configuration configuration;
+    private boolean enableOAuth2 = false;
+    private OAuthConfig oAuthConfig;
 
     public ConnectionConfiguration() {
 
@@ -113,7 +115,7 @@ public class ConnectionConfiguration {
 
     public void setPassword(String password) throws InvalidConfigurationException {
 
-        if (StringUtils.isEmpty(password) && getRequireAuthentication()) {
+        if (StringUtils.isEmpty(password) && getRequireAuthentication() && !isOAuth2Enabled()) {
             throw new InvalidConfigurationException("Server requires authentication, mandatory parameter 'password' is not set.");
         }
         this.password = password;
@@ -310,5 +312,25 @@ public class ConnectionConfiguration {
     public Boolean getRequireAuthentication() {
 
         return requireAuthentication;
+    }
+
+    public void setEnableOAuth2(String enableOAuth2) {
+
+        this.enableOAuth2 = Boolean.parseBoolean(enableOAuth2);
+    }
+
+    public Boolean isOAuth2Enabled() {
+
+        return enableOAuth2;
+    }
+
+    public OAuthConfig getOAuthConfig() {
+
+        return oAuthConfig;
+    }
+
+    public void setOAuthConfig(OAuthConfig oAuthConfig) {
+
+        this.oAuthConfig = oAuthConfig;
     }
 }

@@ -26,7 +26,8 @@ import org.wso2.carbon.connector.connection.EmailConnection;
 import org.wso2.carbon.connector.connection.EmailConnectionFactory;
 import org.wso2.carbon.connector.connection.EmailProtocol;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
-import org.wso2.carbon.connector.core.connection.ConnectionHandler;
+import org.wso2.carbon.connector.connection.oauth.OAuthUtils;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
@@ -66,27 +67,44 @@ public final class EmailUtils {
      *
      * @param connectionConfiguration connection configuration
      */
-    public static void createConnection(ConnectionConfiguration connectionConfiguration) {
+    public static void createConnection(ConnectionConfiguration connectionConfiguration)
+            throws EmailConnectionException {
 
-        String connectorName = EmailConstants.CONNECTOR_NAME;
         String connectionName = connectionConfiguration.getConnectionName();
-        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
-        if (!handler.checkIfConnectionExists(connectorName, connectionName)) {
+        EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
+        if (connectionConfiguration.isOAuth2Enabled()) {
+            shutDownIfConnectionIsExpired(connectionName, handler);
+        }
+        if (!handler.checkIfConnectionExists(connectionName)) {
+            if (log.isDebugEnabled()) {
+                log.debug(format("Connection does not exist for connection name: %s. " +
+                        "Hence a new connection will be created.", connectionName));
+            }
             if (connectionConfiguration.getProtocol().getName().equalsIgnoreCase(EmailProtocol.SMTP.name())) {
                 // For SMTP protocols a connection pool is not required as they require only a session, which need not be
                 // manipulated as the connection.
                 EmailConnection connection = new EmailConnection(connectionConfiguration);
-                handler.createConnection(EmailConstants.CONNECTOR_NAME, connectionName, connection);
+                handler.createConnection(connectionName, connection);
             } else {
                 // For other protocols, such as IMAP and POP3, connections to a store and folder is made which requires to
                 // handled. Hence, for these instances, we will create a connection pool to optimize the use of these
                 // connections.
-                handler.createConnection(EmailConstants.CONNECTOR_NAME, connectionName,
-                        new EmailConnectionFactory(connectionConfiguration), connectionConfiguration.getConfiguration());
+                handler.createConnection(connectionName, new EmailConnectionFactory(connectionConfiguration),
+                        connectionConfiguration.getConfiguration());
             }
         } else {
             log.debug(format("Connection exists for connection name: %s.", connectionName));
         }
+    }
+
+    /**
+     * Retrieves the token ID defined as email:<connection_name>
+     *
+     * @param connectionName Name of the connection
+     * @return the token ID
+     */
+    public static String getTokenID(String connectionName) {
+        return format("%s:%s", EmailConstants.CONNECTOR_NAME, connectionName);
     }
 
     /**
@@ -242,4 +260,12 @@ public final class EmailUtils {
         messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_MESSAGE, error.getErrorDetail());
     }
 
+    private static void shutDownIfConnectionIsExpired(String connectionName, EmailConnectionHandler handler) {
+
+        log.debug(format("Checking if token generated on connection %s is expired", connectionName));
+        if (OAuthUtils.checkIfTokenExpired(getTokenID(connectionName))) {
+            log.debug(format("Token generated on %s is expired. Hence shutting down the connection", connectionName));
+            handler.shutDownConnection(connectionName);
+        }
+    }
 }

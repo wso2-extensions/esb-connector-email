@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.carbon.connector</groupId>
     <artifactId>org.wso2.carbon.connector.emailconnector</artifactId>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
     <name>WSO2 Carbon - Connector For email</name>
     <url>http://wso2.org</url>
@@ -36,13 +36,14 @@
         <automation.framework.version>4.4.3</automation.framework.version>
         <emma.version>2.1.5320</emma.version>
         <synapse.version>2.1.7-wso2v111</synapse.version>
-        <carbon.mediation.version>4.7.52</carbon.mediation.version>
+        <carbon.mediation.version>4.7.160</carbon.mediation.version>
         <json.version>2.0.0.wso2v1</json.version>
         <org.testng.version>6.1.1</org.testng.version>
         <jets3t.version>0.9.4</jets3t.version>
         <bouncycastle.version>1.55</bouncycastle.version>
         <rampart.apache.version>1.6.1-wso2v18</rampart.apache.version>
         <rampart.wso2.version>1.6.1.wso2v18</rampart.wso2.version>
+        <com.google.code.gson.version>2.9.0</com.google.code.gson.version>
         <skip-tests>true</skip-tests>
     </properties>
 
@@ -198,6 +199,11 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>1.6.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${com.google.code.gson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

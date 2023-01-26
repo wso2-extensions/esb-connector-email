@@ -42,6 +42,14 @@ public final class EmailConstants {
     public static final String PORT = "port";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    public static final String ENABLE_OAUTH2 = "enableOAuth2";
+    public static final String GRANT_TYPE= "grantType";
+    public static final String CLIENT_ID = "clientId";
+    public static final String CLIENT_SECRET = "clientSecret";
+    public static final String REFRESH_TOKEN = "refreshToken";
+    public static final String TOKEN_URL = "tokenUrl";
+    public static final String SCOPE = "scope";
+    public static final String AUTH_MECHANISM_XOAUTH2 = "XOAUTH2";
     public static final String FOLDER = "folder";
     public static final String EMAIL_ID = "emailID";
     public static final String EMAIL_INDEX = "emailIndex";

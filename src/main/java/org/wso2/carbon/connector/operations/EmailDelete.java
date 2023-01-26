@@ -18,10 +18,10 @@
 package org.wso2.carbon.connector.operations;
 
 import org.apache.synapse.MessageContext;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.connection.ConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
@@ -47,12 +47,11 @@ public class EmailDelete extends AbstractConnector {
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
         String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
         String connectionName = null;
-        ConnectionHandler handler = ConnectionHandler.getConnectionHandler();
+        EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
         try {
             connectionName = EmailUtils.getConnectionName(messageContext);
-            connection = (MailBoxConnection) handler
-                    .getConnection(EmailConstants.CONNECTOR_NAME, connectionName);
+            connection = (MailBoxConnection) handler.getConnection(connectionName);
             boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.DELETED,
                     true);
             EmailUtils.generateOutput(messageContext, status);
@@ -70,7 +69,7 @@ public class EmailDelete extends AbstractConnector {
             handleException(format(errorString, folder), e, messageContext);
         } finally {
             if (connection != null) {
-                handler.returnConnection(EmailConstants.CONNECTOR_NAME, connectionName, connection);
+                handler.returnConnection(connectionName, connection);
             }
         }
     }

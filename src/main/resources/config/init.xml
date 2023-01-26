@@ -38,6 +38,13 @@
 	<parameter name="evictionCheckInterval" description="The number of milliseconds between runs of the object evictor"/>
 	<parameter name="exhaustedAction" description="The behavior of the pool when the pool is exhausted."/>
 	<parameter name="requireAuthentication" description="Whether authentication is required for SMTP server."/>
+	<parameter name="enableOAuth2" description="Whether to enable OAuth2"/>
+	<parameter name="grantType" description="grantType"/>
+	<parameter name="clientId" description="clientId"/>
+	<parameter name="clientSecret" description="clientSecret"/>
+	<parameter name="refreshToken" description="refreshToken"/>
+	<parameter name="scope" description="scope"/>
+	<parameter name="tokenUrl" description="tokenUrl"/>
 	<sequence>
 		<property name="host" expression="$func:host"/>
 		<property name="port" expression="$func:port"/>
@@ -60,6 +67,13 @@
 		<property name="evictionCheckInterval" expression="$func:evictionCheckInterval"/>
 		<property name="exhaustedAction" expression="$func:exhaustedAction"/>
 		<property name="requireAuthentication" expression="$func:requireAuthentication"/>
+		<property name="enableOAuth2" expression="$func:enableOAuth2"/>
+		<property name="clientId" expression="$func:clientId"/>
+		<property name="clientSecret" expression="$func:clientSecret"/>
+		<property name="refreshToken" expression="$func:refreshToken"/>
+		<property name="scope" expression="$func:scope"/>
+		<property name="tokenUrl" expression="$func:tokenUrl"/>
+		<property name="grantType" expression="$func:grantType"/>
 		<class name="org.wso2.carbon.connector.operations.EmailConfig" />
 	</sequence>
 </template>
