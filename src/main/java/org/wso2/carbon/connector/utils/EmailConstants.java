@@ -36,6 +36,7 @@ public final class EmailConstants {
     public static final String CONTENT_TYPE = "contentType";
     public static final String ENCODING = "encoding";
     public static final String ATTACHMENTS = "attachments";
+    public static final String INLINE_IMAGES = "inlineImages";
     public static final String CONTENT_TRANSFER_ENCODING = "contentTransferEncoding";
     public static final String CONNECTION_TYPE = "connectionType";
     public static final String HOST = "host";

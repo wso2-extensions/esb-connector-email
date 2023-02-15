@@ -18,28 +18,36 @@
 package org.wso2.carbon.connector.utils;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.tika.Tika;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.regex.Pattern;
 import javax.activation.DataHandler;
+
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
+import javax.mail.util.ByteArrayDataSource;
 
 import static javax.mail.Part.ATTACHMENT;
 import static javax.mail.Part.INLINE;
@@ -56,11 +64,16 @@ public final class MessageBuilder {
     private static final String DEFAULT_ENCODING = "UTF-8";
     private static final String DEFAULT_CONTENT_TRANSFER_ENCODING = "Base64";
     private static final String REGEX = "([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)";
+    public static final String FILE_PATH = "filePath";
+    public static final String BASE64_CONTENT = "base64Content";
+    public static final String CONTENT_ID = "contentID";
+    public static final String FILE_NAME = "fileName";
     private static final Pattern pattern = Pattern.compile(REGEX);
 
     private final MimeMessage message;
 
     private String attachments;
+    private String inlineImages;
     private String contentType;
     private String contentTransferEncoding;
     private String content;
@@ -238,12 +251,25 @@ public final class MessageBuilder {
     }
 
     /**
+     * Add inline images to the email
+     *
+     * @param inlineImages Inline image details to be embedded in the email
+     * @return MessageBuilder instance
+     */
+    public MessageBuilder withInlineImages(String inlineImages) {
+        if (StringUtils.isNotEmpty(inlineImages)) {
+            this.inlineImages = inlineImages;
+        }
+        return this;
+    }
+
+    /**
      * Build MIME Message using configured parameters
      *
      * @return MIME Message with the configured values
      * @throws MessagingException if failed to build message
      */
-    public MimeMessage build() throws MessagingException, IOException {
+    public MimeMessage build() throws MessagingException, IOException, InvalidConfigurationException {
 
         if (attachments != null && !attachments.isEmpty()) {
             MimeMultipart multipart = new MimeMultipart();
@@ -258,7 +284,7 @@ public final class MessageBuilder {
                         addAttachment(multipart, attachmentsArray.getJSONObject(i));
                     }
                 } catch (JSONException e) {
-                    throw new IOException("Invalid JSON data format.", e);
+                    throw new IOException("Invalid JSON data format for attachments.", e);
                 }
             } else {
                 String[] attachFiles = attachments.split(",");
@@ -267,10 +293,82 @@ public final class MessageBuilder {
                 }
             }
             message.setContent(multipart, MULTIPART_TYPE);
+        } else if (StringUtils.isNotEmpty(inlineImages)) {
+            Multipart multiPart = new MimeMultipart();
+
+            MimeBodyPart mimeContentPart = new MimeBodyPart();
+            mimeContentPart.setContent(content, contentType);
+            multiPart.addBodyPart(mimeContentPart);
+
+            try {
+                JSONArray inlineImagesArray = new JSONArray(inlineImages);
+                for (int i = 0; i < inlineImagesArray.length(); i++) {
+                    BodyPart imagePart = getInlineImage(inlineImagesArray.getJSONObject(i));
+                    multiPart.addBodyPart(imagePart);
+                }
+            } catch (JSONException e) {
+                throw new IOException("Invalid JSON data format for inline images.", e);
+            }
+            message.setContent(multiPart, MULTIPART_TYPE);
         } else {
             setMessageContent(message);
         }
         return message;
+    }
+
+    private BodyPart getInlineImage(JSONObject inlineImage)
+            throws IOException, InvalidConfigurationException, MessagingException {
+        if (inlineImage.has(FILE_PATH)) {
+            return getImagePartFromFilePath(inlineImage);
+        } else if (inlineImage.has(BASE64_CONTENT)) {
+            return getImagePartFromBase64(inlineImage);
+        } else {
+            throw new InvalidConfigurationException(
+                    "Mandatory parameters 'filePath' or 'base64Content' are not set for inline image.");
+        }
+    }
+
+    private BodyPart getImagePartFromBase64(JSONObject inlineImage)
+            throws InvalidConfigurationException, MessagingException {
+        BodyPart imagePart = new MimeBodyPart();
+        try {
+            String base64Content = inlineImage.get(BASE64_CONTENT).toString();
+            String contentId = inlineImage.get(CONTENT_ID).toString();
+            String fileName = inlineImage.get(FILE_NAME).toString();
+
+            byte[] rawImage = Base64.decodeBase64(base64Content.getBytes());
+            String imageType = "image/".concat(FilenameUtils.getExtension(fileName));
+            ByteArrayDataSource imageDataSource = new ByteArrayDataSource(rawImage, imageType);
+
+            imagePart.setDataHandler(new DataHandler(imageDataSource));
+            imagePart.setHeader("Content-ID", "<".concat(contentId).concat(">"));
+            imagePart.setFileName(fileName);
+            return imagePart;
+        } catch (JSONException e) {
+            throw new InvalidConfigurationException("Invalid JSON data format for inline image.", e);
+        }
+    }
+
+    private BodyPart getImagePartFromFilePath(JSONObject inlineImage)
+            throws InvalidConfigurationException, IOException, MessagingException {
+        BodyPart imagePart = new MimeBodyPart();
+        try {
+            String filePath = inlineImage.get(FILE_PATH).toString();
+            String contentId = inlineImage.get(CONTENT_ID).toString();
+
+            byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
+            String imageType = "image/".concat(FilenameUtils.getExtension(filePath));
+            ByteArrayDataSource imageDataSource = new ByteArrayDataSource(fileContent, imageType);
+
+            imagePart.setDataHandler(new DataHandler(imageDataSource));
+            imagePart.setHeader("Content-ID", "<".concat(contentId).concat(">"));
+
+            String fileName = FilenameUtils.getName(filePath);
+            imagePart.setFileName(fileName);
+            return imagePart;
+        } catch (JSONException e) {
+            throw new InvalidConfigurationException("Invalid JSON data format for inline image.", e);
+        }
     }
 
     /**
