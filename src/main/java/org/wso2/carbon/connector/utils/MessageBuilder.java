@@ -270,50 +270,53 @@ public final class MessageBuilder {
      * @throws MessagingException if failed to build message
      */
     public MimeMessage build() throws MessagingException, IOException, InvalidConfigurationException {
-
-        if (attachments != null && !attachments.isEmpty()) {
+        if (StringUtils.isNotEmpty(attachments) || StringUtils.isNotEmpty(inlineImages)) {
             MimeMultipart multipart = new MimeMultipart();
             MimeBodyPart body = new MimeBodyPart();
             setMessageContent(body);
             multipart.addBodyPart(body);
-            //check whether the attachment is a json array.
-            if (attachments.startsWith("[")) {
-                try {
-                    JSONArray attachmentsArray = new JSONArray(attachments);
-                    for (int i = 0; i < attachmentsArray.length(); i++) {
-                        addAttachment(multipart, attachmentsArray.getJSONObject(i));
-                    }
-                } catch (JSONException e) {
-                    throw new IOException("Invalid JSON data format for attachments.", e);
-                }
-            } else {
-                String[] attachFiles = attachments.split(",");
-                for (String filePath : attachFiles) {
-                    addAttachment(multipart, filePath);
-                }
+            if (StringUtils.isNotEmpty(attachments)) {
+                buildMultipartMessageWithAttachments(multipart);
+            }
+            if (StringUtils.isNotEmpty(inlineImages)) {
+                buildMultipartMessageWithInlineImages(multipart);
             }
             message.setContent(multipart, MULTIPART_TYPE);
-        } else if (StringUtils.isNotEmpty(inlineImages)) {
-            Multipart multiPart = new MimeMultipart();
-
-            MimeBodyPart mimeContentPart = new MimeBodyPart();
-            mimeContentPart.setContent(content, contentType);
-            multiPart.addBodyPart(mimeContentPart);
-
-            try {
-                JSONArray inlineImagesArray = new JSONArray(inlineImages);
-                for (int i = 0; i < inlineImagesArray.length(); i++) {
-                    BodyPart imagePart = getInlineImage(inlineImagesArray.getJSONObject(i));
-                    multiPart.addBodyPart(imagePart);
-                }
-            } catch (JSONException e) {
-                throw new IOException("Invalid JSON data format for inline images.", e);
-            }
-            message.setContent(multiPart, MULTIPART_TYPE);
         } else {
             setMessageContent(message);
         }
         return message;
+    }
+
+    private void buildMultipartMessageWithInlineImages(MimeMultipart multipart)
+            throws MessagingException, IOException, InvalidConfigurationException {
+        try {
+            JSONArray inlineImagesArray = new JSONArray(inlineImages);
+            for (int i = 0; i < inlineImagesArray.length(); i++) {
+                BodyPart imagePart = getInlineImage(inlineImagesArray.getJSONObject(i));
+                multipart.addBodyPart(imagePart);
+            }
+        } catch (JSONException e) {
+            throw new IOException("Invalid JSON data format for inline images.", e);
+        }
+    }
+
+    private void buildMultipartMessageWithAttachments(MimeMultipart multipart) throws MessagingException, IOException {
+        if (attachments.startsWith("[")) {
+            try {
+                JSONArray attachmentsArray = new JSONArray(attachments);
+                for (int i = 0; i < attachmentsArray.length(); i++) {
+                    addAttachment(multipart, attachmentsArray.getJSONObject(i));
+                }
+            } catch (JSONException e) {
+                throw new IOException("Invalid JSON data format for attachments.", e);
+            }
+        } else {
+            String[] attachFiles = attachments.split(",");
+            for (String filePath : attachFiles) {
+                addAttachment(multipart, filePath);
+            }
+        }
     }
 
     private BodyPart getInlineImage(JSONObject inlineImage)
