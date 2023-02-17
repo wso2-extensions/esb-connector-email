@@ -86,6 +86,7 @@ public class EmailSend extends AbstractConnector {
         String subject = (String) getParameter(messageContext, EmailConstants.SUBJECT);
         String content = (String) getParameter(messageContext, EmailConstants.CONTENT);
         String attachments = (String) getParameter(messageContext, EmailConstants.ATTACHMENTS);
+        String inlineImages = (String) getParameter(messageContext, EmailConstants.INLINE_IMAGES);
         String contentType = (String) getParameter(messageContext, EmailConstants.CONTENT_TYPE);
         String encoding = (String) getParameter(messageContext, EmailConstants.ENCODING);
         String contentTransferEncoding = (String) getParameter(messageContext, EmailConstants.CONTENT_TRANSFER_ENCODING);
@@ -103,6 +104,7 @@ public class EmailSend extends AbstractConnector {
                         .replyTo(replyTo)
                         .withSubject(subject)
                         .withBody(content, contentType, encoding, contentTransferEncoding)
+                        .withInlineImages(inlineImages)
                         .withAttachments(attachments)
                         .withHeaders(getEmailHeadersFromProperties(messageContext))
                         .build();
@@ -114,7 +116,7 @@ public class EmailSend extends AbstractConnector {
                 throw new EmailConnectionException(
                         format("Error occurred while sending the email with subject %s to %s.", subject, to), e);
             } catch (IOException e) {
-                throw new EmailConnectionException(format("Error occurred while adding attachments with subject %s " +
+                throw new EmailConnectionException(format("Error occurred while building MIME message with subject %s " +
                         "to the email to %s.", subject, to), e);
             }
         }

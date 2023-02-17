@@ -117,6 +117,17 @@
                     "required": "false",
                     "helpTip": "Comma separated file paths of the attachments that are sent along with the email body"
                   }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "inlineImages",
+                    "displayName": "Inline Images",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "[]",
+                    "required": "false",
+                    "helpTip": "Array of comma separated inline images that should be embedded inline to email body"
+                  }
                 }
               ]
             }

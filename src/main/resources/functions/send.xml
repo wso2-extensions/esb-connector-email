@@ -26,6 +26,7 @@
     <parameter name="contentType" description="Content Type of the body text"/>
     <parameter name="encoding" description="The character encoding of the body"/>
     <parameter name="attachments" description="The attachments that are sent along with the email body"/>
+    <parameter name="inlineImages" description="The inline images that should be embedded inline to email body"/>
     <parameter name="contentTransferEncoding" description="Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport"/>
     <sequence>
         <property name="from" expression="$func:from"/>
@@ -39,6 +40,7 @@
         <property name="contentType" expression="$func:contentType"/>
         <property name="encoding" expression="$func:encoding"/>
         <property name="attachments" expression="$func:attachments"/>
+        <property name="inlineImages" expression="$func:inlineImages"/>
         <property name="contentTransferEncoding" expression="$func:contentTransferEncoding"/>
         <class name="org.wso2.carbon.connector.operations.EmailSend" />
     </sequence>
