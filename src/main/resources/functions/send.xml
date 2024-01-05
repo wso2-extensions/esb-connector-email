@@ -17,6 +17,7 @@
 -->
 <template xmlns="http://ws.apache.org/ns/synapse" name="send">
     <parameter name="from" description="The 'From' address of the message sender"/>
+    <parameter name="personalName" description="The personal name of the message sender"/>
     <parameter name="to" description="The recipient addresses of 'To' (primary) type"/>
     <parameter name="cc" description="The recipient addresses of 'CC' (carbon copy) type"/>
     <parameter name="bcc" description="The recipient addresses of 'BCC' (blind carbon copy) type"/>
@@ -30,6 +31,7 @@
     <parameter name="contentTransferEncoding" description="Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport"/>
     <sequence>
         <property name="from" expression="$func:from"/>
+        <property name="personalName" expression="$func:personalName"/>
         <property name="to" expression="$func:to"/>
         <property name="cc" expression="$func:cc"/>
         <property name="bcc" expression="$func:bcc"/>
