@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -125,15 +126,21 @@ public final class MessageBuilder {
     }
 
     /**
-     * Adds the from addresses to the messade that is being built.
+     * Adds the from address to the message that is being built.
      *
-     * @param fromAddresses the from addresses of the email.
+     * @param fromAddress the from address of the email.
+     * @param personalName  the personal name of the email.
      * @return MessageBuilder instance
      * @throws MessagingException if failed to set 'from' address
      */
-    public MessageBuilder fromAddresses(String fromAddresses) throws MessagingException {
+    public MessageBuilder fromAddress(String fromAddress, String personalName) throws MessagingException,
+            UnsupportedEncodingException {
 
-        this.message.addFrom(InternetAddress.parse(fromAddresses));
+        if (StringUtils.isEmpty(personalName) || StringUtils.isBlank(personalName)) {
+            this.message.addFrom(InternetAddress.parse(fromAddress));
+        } else {
+            this.message.addFrom(new InternetAddress[]{new InternetAddress(fromAddress, personalName)});
+        }
         return this;
     }
 

@@ -44,6 +44,17 @@
                 {
                   "type": "attribute",
                   "value": {
+                    "name": "personalName",
+                    "displayName": "PersonalName",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The personal name of the message sender"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
                     "name": "to",
                     "displayName": "To",
                     "inputType": "stringOrExpression",

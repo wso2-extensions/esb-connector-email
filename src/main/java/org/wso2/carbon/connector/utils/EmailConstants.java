@@ -28,6 +28,7 @@ public final class EmailConstants {
     public static final String NAME = "name";
     public static final String TO = "to";
     public static final String FROM = "from";
+    public static final String PERSONAL_NAME = "personalName";
     public static final String CC = "cc";
     public static final String BCC = "bcc";
     public static final String REPLY_TO = "replyTo";

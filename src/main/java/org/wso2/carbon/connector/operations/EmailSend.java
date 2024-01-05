@@ -80,6 +80,7 @@ public class EmailSend extends AbstractConnector {
 
         String to = (String) getParameter(messageContext, EmailConstants.TO);
         String from = (String) getParameter(messageContext, EmailConstants.FROM);
+        String personalName = (String) getParameter(messageContext, EmailConstants.PERSONAL_NAME);
         String cc = (String) getParameter(messageContext, EmailConstants.CC);
         String bcc = (String) getParameter(messageContext, EmailConstants.BCC);
         String replyTo = (String) getParameter(messageContext, EmailConstants.REPLY_TO);
@@ -98,7 +99,7 @@ public class EmailSend extends AbstractConnector {
             try {
                 MimeMessage message = MessageBuilder.newMessage(session.getSession())
                         .to(to)
-                        .fromAddresses(from)
+                        .fromAddress(from, personalName)
                         .cc(cc)
                         .bcc(bcc)
                         .replyTo(replyTo)
