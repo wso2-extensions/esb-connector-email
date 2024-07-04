@@ -1,0 +1,21 @@
+{
+    "name": "Email Connector",
+    "owner": "WSO2",
+    "category": "Communication",
+    "documentationUrl": "https://apim.docs.wso2.com/en/latest/reference/connectors/email-connector/email-connector-overview/",
+    "description": "The Email Connector allows you to list, send emails and perform other actions such as mark email as read, mark email as deleted, delete email and expunge folder on different mailboxes using protocols IMAP, POP3 and SMTP.",
+    "status": "Active",
+    "labels": [
+        "email",
+        "communication"
+    ],
+    "releases": [
+        {
+            "tagName": "v1.1.2",
+            "products": [
+                "MI 4.1.0"
+            ],
+            "isHidden": false
+        }
+    ]
+}
