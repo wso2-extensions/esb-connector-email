@@ -1,10 +1,15 @@
 {
     "name": "Email Connector",
     "owner": "WSO2",
+    "product": "MI",
     "category": "Communication",
     "documentationUrl": "https://mi.docs.wso2.com/en/latest/reference/connectors/email-connector/email-connector-overview/",
+    "mavenGroupId": "org.wso2.integration.connector",
+    "mavenArtifactId": "mi-connector-email",
     "description": "The Email Connector allows you to list, send emails and perform other actions such as mark email as read, mark email as deleted, delete email and expunge folder on different mailboxes using protocols IMAP, POP3 and SMTP.",
     "status": "Active",
+    "rank": 6,
+    "type": "Connector",
     "labels": [
         "email",
         "communication"
@@ -17,6 +22,79 @@
                 "MI 4.2.0",
                 "MI 4.1.0",
                 "MI 4.0.0"
+            ],
+            "operations": [
+                {
+                    "name":"init",
+                    "description":"Init operation",
+                    "isHidden":true
+                },
+                {
+                    "name":"list",
+                    "description":"List all the emails.",
+                    "isHidden":false
+                },
+                {
+                    "name":"expungeFolder",
+                    "description":"Delete all the messages scheduled for deletion with the DELETED flag set from the mailbox.",
+                    "isHidden":false
+                },
+                {
+                    "name":"markAsDeleted",
+                    "description":"Mark an incoming email as DELETED. Not physically deleted, only a state change.",
+                    "isHidden":false
+                },
+                {
+                    "name":"markAsRead",
+                    "description":"Marks a single email as READ changing its state in the specified mailbox folder.",
+                    "isHidden":false
+                },
+                {
+                    "name":"send",
+                    "description":"Sends an email message.",
+                    "isHidden":false
+                },
+                {
+                    "name":"delete",
+                    "description":"Deletes an email.",
+                    "isHidden":false
+                },
+                {
+                    "name":"getEmailBody",
+                    "description":"Retrieves email body by index.",
+                    "isHidden":false
+                },
+                {
+                    "name":"getEmailAttachment",
+                    "description":"Retrieves email attachment by index.",
+                    "isHidden":false
+                }
+            ],
+            "connections": [
+                {
+                    "name": "POP3",
+                    "description": "Connection for retrieving emails via POP3."
+                },
+                {
+                    "name": "POP3S",
+                    "description": "Secure connection for retrieving emails via POP3S."
+                },
+                {
+                    "name": "IMAP",
+                    "description": "Connection for accessing emails via IMAP."
+                },
+                {
+                    "name": "IMAPS",
+                    "description": "Secure connection for accessing emails via IMAPS."
+                },
+                {
+                    "name": "SMTP",
+                    "description": "Connection for sending emails via SMTP."
+                },
+                {
+                    "name": "SMTPS",
+                    "description": "Secure connection for sending emails via SMTPS."
+                }
             ],
             "isHidden": false
         }
