@@ -22,5 +22,6 @@
         <dependency component="functions" />
         <description>WSO2 email connector library</description>
     </component>
+    <displayName>Email</displayName>
     <icon>icon/icon-small.gif</icon>
 </connector>
