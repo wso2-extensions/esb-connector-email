@@ -17,15 +17,15 @@
  */
 package org.wso2.carbon.connector.operations;
 
+import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
-import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
@@ -35,12 +35,13 @@ import javax.mail.Flags;
 import static java.lang.String.format;
 
 /**
- * Marks an email as read
+ * Marks an email as deleted
  */
-public class EmailMarkAsDeleted extends AbstractConnector {
+public class EmailMarkAsDeleted extends AbstractEmailConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable,
+                        Boolean overwriteBody) throws ConnectException {
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
         String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
@@ -53,24 +54,24 @@ public class EmailMarkAsDeleted extends AbstractConnector {
             connection = (MailBoxConnection) handler.getConnection(connectionName);
             boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.DELETED,
                     false);
-            EmailUtils.generateOutput(messageContext, status);
-        } catch (EmailConnectionException | ConnectException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            JsonObject resultJSON = generateOperationResult(messageContext, status, null);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+        } catch (EmailConnectionException e) {
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, emailID), e, messageContext);
         } catch (EmailNotFoundException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.EMAIL_NOT_FOUND);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.EMAIL_NOT_FOUND);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, emailID), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(format(errorString, folder), e, messageContext);
-        } catch (ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folder), e, messageContext);
         } finally {
             if (connection != null) {
                 handler.returnConnection(connectionName, connection);
             }
         }
-
     }
 }

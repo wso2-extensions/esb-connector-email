@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <!--
    Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 
@@ -29,6 +30,8 @@
     <parameter name="attachments" description="The attachments that are sent along with the email body"/>
     <parameter name="inlineImages" description="The inline images that should be embedded inline to email body"/>
     <parameter name="contentTransferEncoding" description="Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport"/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property name="from" expression="$func:from"/>
         <property name="personalName" expression="$func:personalName"/>
@@ -44,6 +47,6 @@
         <property name="attachments" expression="$func:attachments"/>
         <property name="inlineImages" expression="$func:inlineImages"/>
         <property name="contentTransferEncoding" expression="$func:contentTransferEncoding"/>
-        <class name="org.wso2.carbon.connector.operations.EmailSend" />
+        <class name="org.wso2.carbon.connector.operations.EmailSend"/>
     </sequence>
 </template>

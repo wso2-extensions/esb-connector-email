@@ -1,0 +1,45 @@
+<!--
+ ~  Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ ~
+ ~  WSO2 LLC. licenses this file to you under the Apache License,
+ ~  Version 2.0 (the "License"); you may not use this file except
+ ~  in compliance with the License.
+ ~  You may obtain a copy of the License at
+ ~
+ ~    http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~  Unless required by applicable law or agreed to in writing,
+ ~  software distributed under the License is distributed on an
+ ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~  KIND, either express or implied.  See the License for the
+ ~  specific language governing permissions and limitations
+ ~  under the License.
+-->
+<template xmlns="http://ws.apache.org/ns/synapse" name="testconnection">
+    <parameter name="host" description="Host name of the mail server"/>
+    <parameter name="port" description="The port number of the mail server"/>
+    <parameter name="username" description="Username used to connect with the mail server"/>
+    <parameter name="password" description="Password to connect with the mail server"/>
+    <parameter name="connectionType" description="Email connection type (protocol) that should be used to establish the connection with the server"/>
+    <parameter name="name" description="Unique name the connection is identified by"/>
+    <parameter name="requireAuthentication" description="Whether to use auth for the connection"/>
+    <sequence>
+        <property name="host" expression="$func:host"/>
+        <property name="port" expression="$func:port"/>
+        <property name="name" expression="$func:name"/>
+        <property name="username" expression="$func:username"/>
+        <property name="password" expression="$func:password"/>
+        <property name="connectionType" expression="$func:connectionType"/>
+        <property name="requireAuthentication" expression="$func:requireAuthentication"/>
+        <header name="Accept" value="application/json" scope="transport" action="set"/>
+        <class name="org.wso2.carbon.connector.connection.TestConnection"/>
+        <filter source="get-property('axis2', 'status')" regex="success">
+            <then>
+                <property name="isValidConnection" value="true" scope="default" type="STRING"/>
+            </then>
+            <else>
+                <property name="isValidConnection" value="false" scope="default" type="STRING"/>
+            </else>
+        </filter>
+    </sequence>
+</template>

@@ -17,31 +17,29 @@
  */
 package org.wso2.carbon.connector.operations;
 
+import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
-import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
 
 import javax.mail.Flags;
 
-import static java.lang.String.format;
-
-public class EmailMarkAsRead extends AbstractConnector {
+public class EmailMarkAsRead extends AbstractEmailConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable,
+                        Boolean overwriteBody) {
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
         String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
-        String errorString = "Error occurred while marking email with ID: %s as read.";
         String connectionName = null;
         EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
@@ -50,20 +48,21 @@ public class EmailMarkAsRead extends AbstractConnector {
             connection = (MailBoxConnection) handler.getConnection(connectionName);
             boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.SEEN,
                     false);
-            EmailUtils.generateOutput(messageContext, status);
+            JsonObject resultJSON = generateOperationResult(messageContext, status, null);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (EmailConnectionException | ConnectException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
-            handleException(format(errorString, folder), e, messageContext);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(e.getMessage(), e, messageContext);
         } catch (EmailNotFoundException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.EMAIL_NOT_FOUND);
-            handleException(format(errorString, folder), e, messageContext);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.EMAIL_NOT_FOUND);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(e.getMessage(), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(format(errorString, folder), e, messageContext);
-        } catch (ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
-            handleException(format(errorString, folder), e, messageContext);
-        } finally {
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(e.getMessage(), e, messageContext);
+        }  finally {
             if (connection != null) {
                 handler.returnConnection(connectionName, connection);
             }

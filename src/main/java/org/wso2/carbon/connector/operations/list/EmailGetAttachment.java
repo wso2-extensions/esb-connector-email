@@ -17,14 +17,16 @@
  */
 package org.wso2.carbon.connector.operations.list;
 
+import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
@@ -37,12 +39,13 @@ import static java.lang.String.format;
 /**
  * Retrieves an email attachment
  */
-public class EmailGetAttachment extends AbstractConnector {
+public class EmailGetAttachment extends AbstractEmailConnectorOperation {
 
     private static final String ERROR = "Error occurred while retrieving attachment.";
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable, 
+                        Boolean overwriteBody) throws ConnectException {
 
         String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
         String attachmentIndex = (String) getParameter(messageContext, EmailConstants.ATTACHMENT_INDEX);
@@ -50,15 +53,18 @@ public class EmailGetAttachment extends AbstractConnector {
                 .getProperty(ResponseConstants.PROPERTY_EMAILS);
 
         if (emailIndex != null && attachmentIndex != null && emailMessages != null) {
-            setAttachment(messageContext, emailIndex, attachmentIndex, emailMessages);
+            setAttachment(messageContext, emailIndex, attachmentIndex, emailMessages, responseVariable, overwriteBody);
         } else if (emailIndex == null) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format("%s Email Index is not set.", ERROR), messageContext);
         } else if (attachmentIndex == null) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format("%s Attachment Index is not set.", ERROR), messageContext);
         } else {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format("%s No emails retrieved. " +
                     "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
         }
@@ -69,11 +75,13 @@ public class EmailGetAttachment extends AbstractConnector {
      *
      * @param messageContext  Message Context
      * @param emailIndex      Email Index
-     * @param attachmentIndex Attachment Indec
+     * @param attachmentIndex Attachment Index
      * @param emailMessages   List of emails
+     * @param responseVariable The variable to store the response
+     * @param overwriteBody   Whether to overwrite the body
      */
     private void setAttachment(MessageContext messageContext, String emailIndex, String attachmentIndex,
-                               List<EmailMessage> emailMessages) {
+                               List<EmailMessage> emailMessages, String responseVariable, Boolean overwriteBody) {
 
         if (log.isDebugEnabled()) {
             log.debug(format("Retrieving email attachment for email at index %s and attachment at index %s...",
@@ -83,13 +91,27 @@ public class EmailGetAttachment extends AbstractConnector {
             EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
             Attachment attachment = EmailUtils.getEmailAttachment(emailMessage, attachmentIndex);
             setProperties(messageContext, attachment);
+            
+            // Create result JSON with success status
+            JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+            JsonObject attachmentInfo = new JsonObject();
+            attachmentInfo.addProperty("name", attachment.getName());
+            attachmentInfo.addProperty("contentType", attachment.getContentType());
+            resultJSON.add("attachment", attachmentInfo);
+            
+            // Set the content directly
             PayloadUtils.setContent(((Axis2MessageContext) messageContext).getAxis2MessageContext(),
                     attachment.getContent(), attachment.getContentType());
+            
+            // Handle response for the operation status
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
         } catch (ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.RESPONSE_GENERATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException("Error occurred during setting attachment content.", e, messageContext);
         }
     }

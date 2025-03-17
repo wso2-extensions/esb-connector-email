@@ -50,5 +50,9 @@
 			<file>getEmailAttachment.xml</file>
 			<description>Retrieves email attachment by index.</description>
 		</component>
+		<component name="testconnection">
+			<file>testConnection.xml</file>
+			<description>Operation to test the connection for email connector.</description>
+		</component>
     </subComponents>    
 </component>

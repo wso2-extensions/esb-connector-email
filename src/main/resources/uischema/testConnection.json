@@ -1,0 +1,114 @@
+{
+  "connectorName": "email",
+  "operationName": "testConnection",
+  "title": "Test Connection",
+  "help": "<h1>Test Email Connection</h1> <b>The testConnection operation verifies connectivity with the email server.</b><br><br><ul><li><a href=\"https://ei.docs.wso2.com/en/latest/micro-integrator/references/connectors/email-connector/email-connector-config/\"> More Help </a></li></ul>",
+  "elements": [
+    {
+        "type": "attribute",
+        "value": {
+          "name": "connectionName",
+          "displayName": "Connection Name",
+          "inputType": "string",
+          "defaultValue": "EMAIL_CONNECTION_1",
+          "required": "true",
+          "helpTip": "The name for the email connection",
+          "validation": "nameWithoutSpecialCharactors"
+        }
+      },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "General",
+        "elements": [
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Connection Details",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "host",
+                    "displayName": "Host",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Host name of the mail server"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "port",
+                    "displayName": "Port",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "The port number of the mail server"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "username",
+                    "displayName": "Username",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Username used to connect with the mail server"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "password",
+                    "displayName": "Password",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Password to connect with the mail server",
+                    "isSensitive": "true"
+                  }
+                },
+                {
+                    "type": "attribute",
+                    "value": {
+                        "name": "name",
+                        "displayName": "Connection Name",
+                        "inputType": "string",
+                        "defaultValue": "",
+                        "required": "true"
+                    }
+                },
+                {
+                    "type": "attribute",
+                    "value": {
+                        "name": "requireAuthentication",
+                        "displayName": "Require Authentication",
+                        "inputType": "booleanOrExpression",
+                        "defaultValue": "true",
+                        "required": "true",
+                        "helpTip": "Whether authentication is required to connect with SMTP server"
+                    }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionType",
+                    "displayName": "Connection Type",
+                    "inputType": "comboOrExpression",
+                    "comboValues": ["SMTP", "SMTPS", "IMAP", "IMAPS", "POP3", "POP3S"],
+                    "defaultValue": "SMTP",
+                    "required": "true",
+                    "helpTip": "Email connection type (protocol) that should be used to establish the connection with the server"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+        }
+    }
+    ]
+}

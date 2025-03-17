@@ -62,6 +62,17 @@ public final class EmailUtils {
 
     }
 
+
+    /**
+     * Tests the email connection using existing connection framework
+     *
+     * @param messageContext Message Context
+     */
+    public static void testConnection(ConnectionConfiguration configuration) throws EmailConnectionException {
+        EmailConnection emailConnection = new EmailConnection(configuration);
+        emailConnection.testConnection();
+    }
+
     /**
      * Creates a connection with the given configuration
      *

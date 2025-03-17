@@ -28,8 +28,11 @@ import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.utils.EmailConstants;
 
 import java.util.Properties;
+
+import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Store;
 
 import static java.lang.String.format;
 
@@ -46,6 +49,21 @@ public class EmailConnection implements Connection {
 
     private Session session;
     private EmailProtocol protocol;
+
+    /**
+     * Tests the connection with the email server
+     *
+     * @throws EmailConnectionException if the connection fails
+     */
+    public void testConnection() throws EmailConnectionException {
+        try {
+            Store store = session.getStore(protocol.getName());
+            store.connect();
+            store.close();
+        } catch (MessagingException e) {
+            throw new EmailConnectionException("Failed to authenticate with the email server.", e);
+        }
+    }
 
     public EmailConnection(ConnectionConfiguration connectionConfiguration) throws EmailConnectionException {
 

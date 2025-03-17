@@ -39,7 +39,11 @@ public final class ResponseConstants {
     public static final String PROPERTY_EMAIL_REPLY_TO = "REPLY_TO";
     public static final String PROPERTY_ERROR_CODE = "ERROR_CODE";
     public static final String PROPERTY_ERROR_MESSAGE = "ERROR_MESSAGE";
-
+    public static final String RESPONSE_VARIABLE = "responseVariable";
+    public static final String OVERWRITE_BODY = "overwriteBody";
+    public final static String JSON_CONTENT_TYPE = "application/json";
+    public static final String STATUS_CODE = "HTTP_SC";
+    public static final Object HTTP_STATUS_500 = "500";
     private ResponseConstants() {
 
     }

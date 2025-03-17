@@ -88,6 +88,10 @@ public final class EmailConstants {
     public static final String FLAG_DELETED = "deleted";
     public static final String FLAG_RECENT = "recent";
 
+    //Test Connections
+    public static final String STATUS = "status";
+    public static final String ERROR_MESSAGE = "errorMessage";
+
     private EmailConstants() {
 
     }

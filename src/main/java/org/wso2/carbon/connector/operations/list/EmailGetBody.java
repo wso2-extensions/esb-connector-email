@@ -17,10 +17,12 @@
  */
 package org.wso2.carbon.connector.operations.list;
 
+import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
-import org.wso2.carbon.connector.core.AbstractConnector;
+import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.EmailMessage;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.ResponseConstants;
@@ -33,12 +35,13 @@ import static java.lang.String.format;
 /**
  * Retrieves an email body
  */
-public class EmailGetBody extends AbstractConnector {
+public class EmailGetBody extends AbstractEmailConnectorOperation {
 
     private static final String ERROR = "Error occurred while retrieving email body.";
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable, 
+                        Boolean overwriteBody) throws ConnectException {
 
         String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
         List<EmailMessage> emailMessages = (List<EmailMessage>) messageContext
@@ -51,16 +54,35 @@ public class EmailGetBody extends AbstractConnector {
                     log.debug(format("Retrieving email body for email at index %s...", emailIndex));
                 }
                 setProperties(messageContext, emailMessage);
+                
+                // Create JSON response with email details
+                JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+                JsonObject emailDetails = new JsonObject();
+                emailDetails.addProperty("emailID", emailMessage.getEmailId());
+                emailDetails.addProperty("to", emailMessage.getTo());
+                emailDetails.addProperty("from", emailMessage.getFrom());
+                emailDetails.addProperty("cc", emailMessage.getCc());
+                emailDetails.addProperty("bcc", emailMessage.getBcc());
+                emailDetails.addProperty("subject", emailMessage.getSubject());
+                emailDetails.addProperty("replyTo", emailMessage.getReplyTo());
+                emailDetails.addProperty("htmlContent", emailMessage.getHtmlContent());
+                emailDetails.addProperty("textContent", emailMessage.getTextContent());
+                resultJSON.add("email", emailDetails);
+                
+                handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             } else if (emailIndex == null) {
-                EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+                JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+                handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
                 handleException(format("%s Email Index is not set.", ERROR), messageContext);
             } else {
-                EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+                JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+                handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
                 handleException(format("%s No emails retrieved. " +
                         "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
             }
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
         }
     }
