@@ -50,6 +50,9 @@ public class EmailConnection implements Connection {
 
     private Session session;
     private EmailProtocol protocol;
+    private String host;
+    private String username;
+    private String password;
 
     /**
      * Tests the connection with the email server
@@ -112,6 +115,9 @@ public class EmailConnection implements Connection {
     public EmailConnection(ConnectionConfiguration connectionConfiguration) throws EmailConnectionException {
 
         this.protocol = connectionConfiguration.getProtocol();
+        this.host = connectionConfiguration.getHost();
+        this.username = connectionConfiguration.getUsername();
+        this.password = connectionConfiguration.getPassword();
         Properties sessionProperties = setSessionProperties(connectionConfiguration.getHost(),
                 connectionConfiguration.getPort(), connectionConfiguration.getRequireAuthentication());
         sessionProperties.putAll(setTimeouts(connectionConfiguration.getReadTimeout(),

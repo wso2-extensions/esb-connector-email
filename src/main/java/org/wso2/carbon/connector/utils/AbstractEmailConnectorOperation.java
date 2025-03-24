@@ -2,12 +2,12 @@ package org.wso2.carbon.connector.utils;
 
 import com.google.gson.JsonObject;
 import org.apache.axis2.AxisFault;
-import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.commons.json.JsonUtil;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.data.connector.ConnectorResponse;
 import org.apache.synapse.data.connector.DefaultConnectorResponse;
+import org.opensaml.xml.signature.J;
 import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 
@@ -103,6 +103,21 @@ public abstract class AbstractEmailConnectorOperation extends AbstractConnector 
         return jsonResult;
     }
 
+    public JsonObject generateErrorResult(MessageContext msgContext,  Error error) {
+        JsonObject jsonResult = new JsonObject();
+
+        if (error != null) {
+            setErrorPropertiesToMessage(msgContext, error);
+            JsonObject errorJson = new JsonObject();
+            errorJson.addProperty("code", error.getErrorCode());
+            errorJson.addProperty("message", error.getErrorDetail());
+            jsonResult.add("error", errorJson);
+        }
+
+        return jsonResult;
+    }
+    
+
     public static void setErrorPropertiesToMessage(MessageContext messageContext, Error error) {
 
         messageContext.setProperty(ResponseConstants.PROPERTY_ERROR_CODE, error.getErrorCode());
@@ -128,8 +143,7 @@ public abstract class AbstractEmailConnectorOperation extends AbstractConnector 
         axisMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE, ResponseConstants.JSON_CONTENT_TYPE);
         axisMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.CONTENT_TYPE, ResponseConstants.JSON_CONTENT_TYPE);
     } else {
-        String output = payload.toString();
-        response.setPayload(output);
+        response.setPayload(payload);
     }
 
     if (headers == null) {
@@ -140,4 +154,5 @@ public abstract class AbstractEmailConnectorOperation extends AbstractConnector 
     response.setAttributes(attributes);
     messageContext.setVariable(responseVariable, response);
     }
+
 }

@@ -62,6 +62,28 @@ public final class EmailUtils {
 
     }
 
+    /**
+     * Converts an input stream to a Base64 encoded string
+     *
+     * @param inputStream The input stream to convert
+     * @return Base64 encoded string representation of the input stream
+     * @throws ContentBuilderException if an error occurs during conversion
+     */
+    public static String convertInputStreamToBase64(java.io.InputStream inputStream) throws ContentBuilderException {
+        try {
+            if (inputStream == null) {
+                return null;
+            }
+            
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            
+            return java.util.Base64.getEncoder().encodeToString(bytes);
+        } catch (java.io.IOException e) {
+            throw new ContentBuilderException("Error while converting input stream to Base64", e);
+        }
+    }
+
 
     /**
      * Tests the email connection using existing connection framework
@@ -244,19 +266,6 @@ public final class EmailUtils {
             throw new InvalidConfigurationException("Connection name is not set.");
         }
         return connectionName;
-    }
-
-    /**
-     * Generates the output payload with result status
-     *
-     * @param messageContext The message context that is processed
-     * @param resultStatus   Result of the status
-     */
-    public static void generateOutput(MessageContext messageContext, boolean resultStatus)
-            throws ContentBuilderException {
-
-        String response = START_TAG + resultStatus + END_TAG;
-        PayloadUtils.preparePayload(((Axis2MessageContext) messageContext).getAxis2MessageContext(), response);
     }
 
     /**

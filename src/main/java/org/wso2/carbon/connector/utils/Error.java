@@ -28,6 +28,7 @@ public enum Error {
     INVALID_CONFIGURATION("700204", "EMAIL:INVALID_CONFIGURATION"),
     RESPONSE_GENERATION("700205", "EMAIL:RESPONSE_GENERATION"),
     INVALID_CREDENTIALS("700206", "EMAIL:INVALID_CREDENTIALS");
+    
 
     private final String code;
     private final String message;

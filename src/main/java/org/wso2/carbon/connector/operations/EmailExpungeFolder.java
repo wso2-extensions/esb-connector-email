@@ -26,9 +26,12 @@ import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
+
+import com.google.gson.JsonObject;
 
 import javax.mail.Folder;
 
@@ -37,10 +40,11 @@ import static java.lang.String.format;
 /**
  * Deletes emails marked for deletion
  */
-public class EmailExpungeFolder extends AbstractConnector {
+public class EmailExpungeFolder extends AbstractEmailConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable, 
+                        Boolean overwriteBody) throws ConnectException {
 
         String errorString = "Error occurred while expunging folder: %s.";
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
@@ -57,15 +61,15 @@ public class EmailExpungeFolder extends AbstractConnector {
             if (log.isDebugEnabled()) {
                 log.debug(format("Expunged folder: %s...", folder));
             }
-            EmailUtils.generateOutput(messageContext, true);
+            JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (EmailConnectionException | ConnectException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folder), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(format(errorString, folder), e, messageContext);
-        } catch (ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folder), e, messageContext);
         } finally {
             if (connection != null) {

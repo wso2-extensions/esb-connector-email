@@ -8,10 +8,6 @@
       "type": "object",
       "description": "The main response payload from the getBody operation",
       "properties": {
-        "success": {
-          "type": "boolean",
-          "description": "Indicates whether the operation was successful"
-        },
         "email": {
           "type": "object",
           "description": "Email body details",
@@ -70,9 +66,12 @@
               "type": "string",
               "description": "Detailed error information"
             }
-          }
+          },
+          "required": ["code", "message", "detail"],
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "required": ["payload"],

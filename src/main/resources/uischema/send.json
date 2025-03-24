@@ -17,11 +17,7 @@
               "inputType": "connection",
               "allowedConnectionTypes": [
                 "SMTP",
-                "SMTPS",
-                "IMAP",
-                "IMAPS",
-                "POP3",
-                "POP3S"
+                "SMTPS"
               ],
               "defaultType": "connection.smtp",
               "defaultValue": "",
@@ -35,113 +31,145 @@
               "groupName": "Basic",
               "elements": [
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "from",
-                    "displayName": "From",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The 'From' address of the message sender"
+                    "groupName": "Sender Information",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "from",
+                          "displayName": "From",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The 'From' address of the message sender"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "personalName",
+                          "displayName": "Personal Name",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The personal name of the message sender"
+                        }
+                      }
+                    ]
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "personalName",
-                    "displayName": "PersonalName",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The personal name of the message sender"
+                    "groupName": "Recipient Information",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "to",
+                          "displayName": "To",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The recipient addresses of 'To' (primary) type"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "cc",
+                          "displayName": "CC",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The recipient addresses of 'CC' (carbon copy) type"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "bcc",
+                          "displayName": "BCC",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The recipient addresses of 'BCC' (blind carbon copy) type"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "replyTo",
+                          "displayName": "Reply To",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The email addresses to which to reply to this email"
+                        }
+                      }
+                    ]
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "to",
-                    "displayName": "To",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The recipient addresses of 'To' (primary) type"
+                    "groupName": "Message Details",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "subject",
+                          "displayName": "Subject",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The subject of the email"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "content",
+                          "displayName": "Content",
+                          "inputType": "textOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Body of the message in any format"
+                        }
+                      }
+                    ]
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "cc",
-                    "displayName": "CC",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The recipient addresses of 'CC' (carbon copy) type"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "bcc",
-                    "displayName": "BCC",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The recipient addresses of 'BCC' (blind carbon copy) type"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "replyTo",
-                    "displayName": "Reply To",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The email addresses to which to reply to this email"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "subject",
-                    "displayName": "Subject",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The subject of the email"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "content",
-                    "displayName": "Content",
-                    "inputType": "textOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "Body of the message in any format"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "attachments",
-                    "displayName": "Attachments",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "Comma separated file paths of the attachments that are sent along with the email body"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "inlineImages",
-                    "displayName": "Inline Images",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "[]",
-                    "required": "false",
-                    "helpTip": "Array of comma separated inline images that should be embedded inline to email body"
+                    "groupName": "Attachments & Embedded Content",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "attachments",
+                          "displayName": "Attachments",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "Comma separated file paths of the attachments that are sent along with the email body"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "inlineImages",
+                          "displayName": "Inline Images",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "[]",
+                          "required": "false",
+                          "helpTip": "Array of comma separated inline images that should be embedded inline to email body"
+                        }
+                      }
+                    ]
                   }
                 }
               ]
@@ -213,7 +241,7 @@
               "name": "overwriteBody",
               "displayName": "Overwrite Message Body",
               "inputType": "checkbox",
-              "defaultValue": "true",
+              "defaultValue": "false",
               "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
               "required": "false"
             }

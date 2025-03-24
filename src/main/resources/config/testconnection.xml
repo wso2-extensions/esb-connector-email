@@ -75,13 +75,5 @@
 		<property name="grantType" expression="$func:grantType"/>
         <header name="Accept" value="application/json" scope="transport" action="set"/>
         <class name="org.wso2.carbon.connector.connection.TestConnection"/>
-        <filter source="get-property('axis2', 'status')" regex="success">
-            <then>
-                <property name="isValidConnection" value="true" scope="default" type="STRING"/>
-            </then>
-            <else>
-                <property name="isValidConnection" value="false" scope="default" type="STRING"/>
-            </else>
-        </filter>
     </sequence>
 </template>

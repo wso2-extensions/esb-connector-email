@@ -89,7 +89,7 @@ public final class EmailConstants {
     public static final String FLAG_RECENT = "recent";
 
     //Test Connections
-    public static final String STATUS = "status";
+    public static final String IS_VALID_CONNECTION = "isValidConnection";
     public static final String ERROR_MESSAGE = "errorMessage";
 
     private EmailConstants() {

@@ -44,6 +44,7 @@ public class EmailGetBody extends AbstractEmailConnectorOperation {
                         Boolean overwriteBody) throws ConnectException {
 
         String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
+        @SuppressWarnings("unchecked")
         List<EmailMessage> emailMessages = (List<EmailMessage>) messageContext
                 .getProperty(ResponseConstants.PROPERTY_EMAILS);
 
@@ -53,10 +54,9 @@ public class EmailGetBody extends AbstractEmailConnectorOperation {
                 if (log.isDebugEnabled()) {
                     log.debug(format("Retrieving email body for email at index %s...", emailIndex));
                 }
-                setProperties(messageContext, emailMessage);
                 
                 // Create JSON response with email details
-                JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+                JsonObject resultJSON = new JsonObject();
                 JsonObject emailDetails = new JsonObject();
                 emailDetails.addProperty("emailID", emailMessage.getEmailId());
                 emailDetails.addProperty("to", emailMessage.getTo());
@@ -71,38 +71,19 @@ public class EmailGetBody extends AbstractEmailConnectorOperation {
                 
                 handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             } else if (emailIndex == null) {
-                JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+                JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
                 handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
                 handleException(format("%s Email Index is not set.", ERROR), messageContext);
             } else {
-                JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+                JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
                 handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
                 handleException(format("%s No emails retrieved. " +
                         "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
             }
         } catch (InvalidConfigurationException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
         }
-    }
-
-    /**
-     * Sets email message content in Message Context
-     *
-     * @param messageContext Message Context
-     * @param emailMessage   Email
-     */
-    private void setProperties(MessageContext messageContext, EmailMessage emailMessage) {
-
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_ID, emailMessage.getEmailId());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_TO, emailMessage.getTo());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_FROM, emailMessage.getFrom());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_CC, emailMessage.getCc());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_BCC, emailMessage.getBcc());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_SUBJECT, emailMessage.getSubject());
-        messageContext.setProperty(ResponseConstants.PROPERTY_EMAIL_REPLY_TO, emailMessage.getReplyTo());
-        messageContext.setProperty(ResponseConstants.PROPERTY_HTML_CONTENT, emailMessage.getHtmlContent());
-        messageContext.setProperty(ResponseConstants.PROPERTY_TEXT_CONTENT, emailMessage.getTextContent());
     }
 }

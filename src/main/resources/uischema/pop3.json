@@ -1,6 +1,7 @@
 {
   "connectorName": "email",
   "connectionName": "POP3",
+  "testConnectionEnabled": true,
   "title": "POP3 Connection",
   "help": "<h1>Email Connector</h1> <b>The email connector supports IMAP, POP3 and SMTP protocols for handling emails</b>",
   "elements": [

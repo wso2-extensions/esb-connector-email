@@ -81,21 +81,21 @@ public class EmailList extends AbstractEmailConnectorOperation {
             folderName = mailboxConfiguration.getFolder();
             List<EmailMessage> messageList = retrieveMessages(connection, mailboxConfiguration);
             messageContext.setProperty(ResponseConstants.PROPERTY_EMAILS, messageList);
-            JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+            JsonObject resultJSON = new JsonObject();
             JsonArray emailsArray = createEmailJsonArray(messageList);
             resultJSON.add("emails", emailsArray);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             
         } catch (EmailConnectionException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.CONNECTIVITY);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
         } catch (EmailParsingException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.RESPONSE_GENERATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.RESPONSE_GENERATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
         } finally {

@@ -23,6 +23,7 @@ import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.core.util.PayloadUtils;
+import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
@@ -90,41 +91,30 @@ public class EmailGetAttachment extends AbstractEmailConnectorOperation {
         try {
             EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
             Attachment attachment = EmailUtils.getEmailAttachment(emailMessage, attachmentIndex);
-            setProperties(messageContext, attachment);
             
             // Create result JSON with success status
-            JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+            JsonObject resultJSON = new JsonObject();
             JsonObject attachmentInfo = new JsonObject();
+
+            // Convert attachment content (InputStream) to Base64 string for JSON
+            String base64Content = EmailUtils.convertInputStreamToBase64(attachment.getContent());
+            
             attachmentInfo.addProperty("name", attachment.getName());
             attachmentInfo.addProperty("contentType", attachment.getContentType());
+            attachmentInfo.addProperty("content", base64Content);
+
             resultJSON.add("attachment", attachmentInfo);
-            
-            // Set the content directly
-            PayloadUtils.setContent(((Axis2MessageContext) messageContext).getAxis2MessageContext(),
-                    attachment.getContent(), attachment.getContentType());
             
             // Handle response for the operation status
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (InvalidConfigurationException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
         } catch (ContentBuilderException e) {
-            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.RESPONSE_GENERATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.RESPONSE_GENERATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException("Error occurred during setting attachment content.", e, messageContext);
         }
-    }
-
-    /**
-     * Sets attachment properties in Message Context
-     *
-     * @param messageContext Message Context
-     * @param attachment     Attachment
-     */
-    private void setProperties(MessageContext messageContext, Attachment attachment) {
-
-        messageContext.setProperty(ResponseConstants.PROPERTY_ATTACHMENT_TYPE, attachment.getContentType());
-        messageContext.setProperty(ResponseConstants.PROPERTY_ATTACHMENT_NAME, attachment.getName());
     }
 }

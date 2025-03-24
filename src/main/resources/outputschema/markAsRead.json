@@ -28,9 +28,13 @@
               "type": "string",
               "description": "Detailed error information"
             }
-          }
+          },
+          "required": ["code", "message", "detail"],
+          "additionalProperties": false
         }
-      }
+      },
+      "required": ["success"],
+      "additionalProperties": false
     }
   },
   "required": ["payload"],

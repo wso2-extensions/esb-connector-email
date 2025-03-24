@@ -19,6 +19,10 @@
             "contentType": {
               "type": "string",
               "description": "MIME type of the attachment"
+            },
+            "content": {
+              "type": "string",
+              "description": "Base64 encoded content of the attachment"
             }
           }
         },
@@ -38,9 +42,12 @@
               "type": "string",
               "description": "Detailed error information"
             }
-          }
+          },
+          "required": ["code", "message", "detail"],
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "required": ["payload"],

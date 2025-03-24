@@ -42,9 +42,9 @@ public class TestConnection extends AbstractConnector {
         try {
             ConnectionConfiguration configuration = getConnectionConfigFromContext(messageContext);
             EmailUtils.testConnection(configuration);
-            axis2MessageCtx.setProperty(EmailConstants.STATUS, "success");
+            axis2MessageCtx.setProperty(EmailConstants.IS_VALID_CONNECTION, true);
         } catch (InvalidConfigurationException | EmailConnectionException e){
-            axis2MessageCtx.setProperty(EmailConstants.STATUS, "failed");
+            axis2MessageCtx.setProperty(EmailConstants.IS_VALID_CONNECTION, false);
             axis2MessageCtx.setProperty(EmailConstants.ERROR_MESSAGE, e.getMessage());
         }
     }

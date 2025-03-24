@@ -64,10 +64,12 @@
                       "type": "string",
                       "description": "MIME type of the attachment"
                     }
-                  }
+                  },
+                  "additionalProperties": false
                 }
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "error": {
@@ -86,9 +88,12 @@
               "type": "string",
               "description": "Detailed error information"
             }
-          }
+          },
+          "required": ["code", "message", "detail"],
+          "additionalProperties": false
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "required": ["payload"],
