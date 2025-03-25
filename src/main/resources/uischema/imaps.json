@@ -241,6 +241,7 @@
     },
     {
       "type": "attributeGroup",
+      "isCollapsed": true,
       "value": {
         "groupName": "OAuth2",
         "elements": [
