@@ -83,244 +83,251 @@
         "groupName": "Advanced",
         "elements": [
           {
-            "type": "attribute",
+            "type": "attributeGroup",
             "value": {
-              "name": "readTimeout",
-              "displayName": "Read Timeout",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The socket read timeout value"
+              "groupName": "OAuth2",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "enableOAuth2",
+                    "displayName": "Enable OAuth2",
+                    "inputType": "booleanOrExpression",
+                    "defaultValue": "false",
+                    "required": "false",
+                    "helpTip": "Whether to enable OAuth2 Authentication"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "grantType",
+                    "displayName": "Grant Type",
+                    "inputType": "comboOrExpression",
+                    "comboValues": ["AUTHORIZATION_CODE","CLIENT_CREDENTIALS"],
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Grant type to generate access token"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "clientId",
+                    "displayName": "Client ID",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Value of the Client ID you obtained when you register your application"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "clientSecret",
+                    "displayName": "Client Secret",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Value of the Client Secret you obtained when you register your application"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "refreshToken",
+                    "displayName": "Refresh Token",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "tokenUrl",
+                    "displayName": "Token URL",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The token endpoint URL to generate access token"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "scope",
+                    "displayName": "Scope",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
+                  }
+                }
+              ]
             }
           },
           {
-            "type": "attribute",
+            "type": "attributeGroup",
             "value": {
-              "name": "connectionTimeout",
-              "displayName": "Connection Timeout",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The socket connection timeout value"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "writeTimeout",
-              "displayName": "Write Timeout",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The socket write timeout value"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "requireTLS",
-              "displayName": "Require TLS",
-              "inputType": "booleanOrExpression",
-              "defaultValue": "",
-              "required": "true",
-              "helpTip":"Whether the connection should be established using TLS"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "checkServerIdentity",
-              "displayName": "Check Server Identity",
-              "inputType": "booleanOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Whether server identity should be checked"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "trustedHosts",
-              "displayName": "Trusted Hosts",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Comma separated string of trust host names"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "sslProtocols",
-              "displayName": "SSL Protocols",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Comma separated string of SSL protocol"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "cipherSuites",
-              "displayName": "Cipher Suites",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Comma separated string of Cipher Suites"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxActiveConnections",
-              "displayName": "Max Active Connections",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Maximum number of active connections in the pool"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxIdleConnections",
-              "displayName": "Max Idle Connections",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Maximum number of idle connections in the pool"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "maxWaitTime",
-              "displayName": "Max Wait Time",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"Maximum time to wait for a pooled component to become available"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "minEvictionTime",
-              "displayName": "Min Eviction Time",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "evictionCheckInterval",
-              "displayName": "Eviction Check Interval",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The number of milliseconds between runs of the object evictor"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "exhaustedAction",
-              "displayName": "Exhausted Action",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip":"The behavior of the pool when the pool is exhausted"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "attributeGroup",
-      "isCollapsed": true,
-      "value": {
-        "groupName": "OAuth2",
-        "elements": [
-          {
-            "type": "attribute",
-            "value": {
-              "name": "enableOAuth2",
-              "displayName": "Enable OAuth2",
-              "inputType": "booleanOrExpression",
-              "defaultValue": "false",
-              "required": "false",
-              "helpTip": "Whether to enable OAuth2 Authentication"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "grantType",
-              "displayName": "Grant Type",
-              "inputType": "comboOrExpression",
-              "comboValues": ["AUTHORIZATION_CODE","CLIENT_CREDENTIALS"],
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "Grant type to generate access token"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "clientId",
-              "displayName": "Client ID",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "Value of the Client ID you obtained when you register your application"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "clientSecret",
-              "displayName": "Client Secret",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "Value of the Client Secret you obtained when you register your application"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "refreshToken",
-              "displayName": "Refresh Token",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "tokenUrl",
-              "displayName": "Token URL",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "The token endpoint URL to generate access token"
-            }
-          },
-          {
-            "type": "attribute",
-            "value": {
-              "name": "scope",
-              "displayName": "Scope",
-              "inputType": "stringOrExpression",
-              "defaultValue": "",
-              "required": "false",
-              "helpTip": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
+              "groupName": "Connection",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "readTimeout",
+                    "displayName": "Read Timeout",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The socket read timeout value"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "connectionTimeout",
+                    "displayName": "Connection Timeout",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The socket connection timeout value"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "writeTimeout",
+                    "displayName": "Write Timeout",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The socket write timeout value"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "requireTLS",
+                    "displayName": "Require TLS",
+                    "inputType": "booleanOrExpression",
+                    "defaultValue": "",
+                    "required": "true",
+                    "helpTip": "Whether the connection should be established using TLS"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "checkServerIdentity",
+                    "displayName": "Check Server Identity",
+                    "inputType": "booleanOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Whether server identity should be checked"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "trustedHosts",
+                    "displayName": "Trusted Hosts",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Comma separated string of trust host names"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "sslProtocols",
+                    "displayName": "SSL Protocols",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Comma separated string of SSL protocol"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "cipherSuites",
+                    "displayName": "Cipher Suites",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Comma separated string of Cipher Suites"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxActiveConnections",
+                    "displayName": "Max Active Connections",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Maximum number of active connections in the pool"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxIdleConnections",
+                    "displayName": "Max Idle Connections",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Maximum number of idle connections in the pool"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "maxWaitTime",
+                    "displayName": "Max Wait Time",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "Maximum time to wait for a pooled component to become available"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "minEvictionTime",
+                    "displayName": "Min Eviction Time",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "evictionCheckInterval",
+                    "displayName": "Eviction Check Interval",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The number of milliseconds between runs of the object evictor"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "exhaustedAction",
+                    "displayName": "Exhausted Action",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "",
+                    "required": "false",
+                    "helpTip": "The behavior of the pool when the pool is exhausted"
+                  }
+                }
+              ]
             }
           }
         ]

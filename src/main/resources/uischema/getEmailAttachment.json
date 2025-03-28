@@ -33,8 +33,8 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "emailIndex",
-                    "displayName": "Email Index",
+                    "name": "emailId",
+                    "displayName": "Email Id",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
@@ -42,12 +42,23 @@
                   }
                 },
                 {
+                    "type": "attribute",
+                    "value": {
+                        "name": "folder",
+                        "displayName": "Folder",
+                        "inputType": "stringOrExpression",
+                        "defaultValue": "Inbox",
+                        "required": "true",
+                        "helpTip": "Folder to be searched for the email"
+                    }
+                },
+                {
                   "type": "attribute",
                   "value": {
                     "name": "attachmentIndex",
                     "displayName": "Attachment Index",
                     "inputType": "stringOrExpression",
-                    "defaultValue": "",
+                    "defaultValue": "0",
                     "required": "true",
                     "helpTip": "Index of the attachment to be retrieved in the email response"
                   }

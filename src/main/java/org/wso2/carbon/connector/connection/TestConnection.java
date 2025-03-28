@@ -34,18 +34,14 @@ import org.wso2.carbon.connector.utils.EmailUtils;
 public class TestConnection extends AbstractConnector {
     @Override
     public void connect(MessageContext messageContext) {
-        // Get the Axis2 MessageContext for setting properties
-        Axis2MessageContext axis2smc = (Axis2MessageContext) messageContext;
-        org.apache.axis2.context.MessageContext axis2MessageCtx = axis2smc.getAxis2MessageContext();
-
         // Set the status of the connection test
         try {
             ConnectionConfiguration configuration = getConnectionConfigFromContext(messageContext);
             EmailUtils.testConnection(configuration);
-            axis2MessageCtx.setProperty(EmailConstants.IS_VALID_CONNECTION, true);
+            messageContext.setProperty(EmailConstants.IS_VALID_CONNECTION, true);
         } catch (InvalidConfigurationException | EmailConnectionException e){
-            axis2MessageCtx.setProperty(EmailConstants.IS_VALID_CONNECTION, false);
-            axis2MessageCtx.setProperty(EmailConstants.ERROR_MESSAGE, e.getMessage());
+            messageContext.setProperty(EmailConstants.IS_VALID_CONNECTION, false);
+            messageContext.setProperty(EmailConstants.ERROR_MESSAGE, e.getMessage());
         }
     }
     
@@ -59,6 +55,7 @@ public class TestConnection extends AbstractConnector {
     private ConnectionConfiguration getConnectionConfigFromContext(MessageContext messageContext)
             throws InvalidConfigurationException {
 
+        String name = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.NAME);
         String host = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.HOST);
         String port = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.PORT);
         String username = (String) ConnectorUtils.lookupTemplateParamater(messageContext, EmailConstants.USERNAME);
@@ -87,11 +84,11 @@ public class TestConnection extends AbstractConnector {
         ConnectionConfiguration connectionConfiguration = new ConnectionConfiguration();
         connectionConfiguration.setHost(host);
         connectionConfiguration.setPort(port);
-        connectionConfiguration.setConnectionName("TEST_CONNECTION");
+        connectionConfiguration.setConnectionName(name);
         connectionConfiguration.setRequireAuthentication(requireAuthentication);
         connectionConfiguration.setEnableOAuth2(enableOAuth2);
         if (Boolean.parseBoolean(enableOAuth2)) {
-            OAuthConfig oAuthConfig = generateOAuthConfig(messageContext, "TEST_CONNECTION");
+            OAuthConfig oAuthConfig = generateOAuthConfig(messageContext, name);
             connectionConfiguration.setOAuthConfig(oAuthConfig);
         }
         connectionConfiguration.setPassword(password);

@@ -143,16 +143,14 @@ public abstract class AbstractEmailConnectorOperation extends AbstractConnector 
         axisMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE, ResponseConstants.JSON_CONTENT_TYPE);
         axisMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.CONTENT_TYPE, ResponseConstants.JSON_CONTENT_TYPE);
     } else {
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
         response.setPayload(payload);
+        response.setHeaders(headers);
+        response.setAttributes(attributes);
+        messageContext.setVariable(responseVariable, response);
     }
-
-    if (headers == null) {
-        headers = new HashMap<>();
-    }
-
-    response.setHeaders(headers);
-    response.setAttributes(attributes);
-    messageContext.setVariable(responseVariable, response);
     }
 
 }

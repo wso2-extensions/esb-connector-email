@@ -24,10 +24,13 @@ public final class ResponseConstants {
 
     public static final String RESPONSE_CONTENT_TYPE = "application/xml";
 
+    // Attachment Attributes
+    public static final String ATTACHMENT_TYPE = "ATTACHMENT_TYPE";
+    public static final String ATTACHMENT_NAME = "ATTACHMENT_NAME";
+    public static final String BASE64_ENCODED = "base64Encoded";
+
     // Properties set in the message context which contains data returned by the operation
     public static final String PROPERTY_EMAILS = "PROPERTY_EMAILS";
-    public static final String PROPERTY_ATTACHMENT_TYPE = "ATTACHMENT_TYPE";
-    public static final String PROPERTY_ATTACHMENT_NAME = "ATTACHMENT_NAME";
     public static final String PROPERTY_HTML_CONTENT = "HTML_CONTENT";
     public static final String PROPERTY_TEXT_CONTENT = "TEXT_CONTENT";
     public static final String PROPERTY_EMAIL_ID = "EMAIL_ID";

@@ -153,7 +153,7 @@ public class EmailList extends AbstractEmailConnectorOperation {
      * @return Parsed messages
      * @throws EmailParsingException if failed to parse content
      */
-    private static List<EmailMessage> parseMessageList(List<Message> messages) throws EmailParsingException {
+    public static List<EmailMessage> parseMessageList(List<Message> messages) throws EmailParsingException {
 
         List<EmailMessage> messagesList = new ArrayList<>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

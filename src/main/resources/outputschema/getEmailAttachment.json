@@ -6,50 +6,36 @@
   "properties": {
     "payload": {
       "type": "object",
-      "description": "The main response payload from the getAttachment operation",
+      "description": "The main response payload from the getBody operation",
       "properties": {
-        "attachment": {
-          "type": "object",
-          "description": "Attachment details",
-          "properties": {
-            "name": {
-              "type": "string",
-              "description": "Name of the attachment file"
-            },
-            "contentType": {
-              "type": "string",
-              "description": "MIME type of the attachment"
-            },
-            "content": {
-              "type": "string",
-              "description": "Base64 encoded content of the attachment"
-            }
-          }
-        },
-        "error": {
-          "type": "object",
-          "description": "Error details if operation failed",
-          "properties": {
-            "code": {
-              "type": "string",
-              "description": "Error code"
-            },
-            "message": {
-              "type": "string",
-              "description": "Error message"
-            },
-            "detail": {
-              "type": "string",
-              "description": "Detailed error information"
-            }
-          },
-          "required": ["code", "message", "detail"],
-          "additionalProperties": false
+        "base64Encoded": {
+          "type": "string",
+          "description": "Base64 encoded attachment content"
         }
       },
-      "additionalProperties": false
-    }
-  },
-  "required": ["payload"],
-  "additionalProperties": false
+      "required": ["base64Encoded"],
+      "additionalProperties": false,
+      "error": {
+        "type": "object",
+        "description": "Error details if operation failed",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Error code"
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "detail": {
+            "type": "string",
+            "description": "Detailed error information"
+          }
+        },
+        "required": ["code", "message", "detail"],
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false
+  }
 }

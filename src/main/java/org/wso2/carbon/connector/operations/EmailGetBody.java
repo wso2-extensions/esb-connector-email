@@ -15,11 +15,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.connector.operations.list;
+package org.wso2.carbon.connector.operations;
 
 import com.google.gson.JsonObject;
 import org.apache.synapse.MessageContext;
+import org.jetbrains.annotations.NotNull;
+import org.wso2.carbon.connector.connection.EmailConnectionHandler;
+import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.core.ConnectException;
+import org.wso2.carbon.connector.exception.EmailConnectionException;
+import org.wso2.carbon.connector.exception.EmailParsingException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
@@ -43,47 +48,53 @@ public class EmailGetBody extends AbstractEmailConnectorOperation {
     public void execute(MessageContext messageContext, String responseVariable, 
                         Boolean overwriteBody) throws ConnectException {
 
-        String emailIndex = (String) getParameter(messageContext, EmailConstants.EMAIL_INDEX);
-        @SuppressWarnings("unchecked")
-        List<EmailMessage> emailMessages = (List<EmailMessage>) messageContext
-                .getProperty(ResponseConstants.PROPERTY_EMAILS);
-
+        String emailId = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
+        String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
+        EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
+        String connectionName = null;
+        MailBoxConnection connection = null;
+        EmailMessage emailMessage = null;
         try {
-            if (emailIndex != null && emailMessages != null) {
-                EmailMessage emailMessage = EmailUtils.getEmail(emailMessages, emailIndex);
+            if (emailId != null) {
+                connectionName = EmailUtils.getConnectionName(messageContext);
+                connection = (MailBoxConnection) handler.getConnection(connectionName);
+                emailMessage = EmailUtils.getEmail(connection, emailId, folder);
                 if (log.isDebugEnabled()) {
-                    log.debug(format("Retrieving email body for email at index %s...", emailIndex));
+                    log.debug(format("Retrieving email body for email at id %s...", emailId));
                 }
                 
                 // Create JSON response with email details
-                JsonObject resultJSON = new JsonObject();
-                JsonObject emailDetails = new JsonObject();
-                emailDetails.addProperty("emailID", emailMessage.getEmailId());
-                emailDetails.addProperty("to", emailMessage.getTo());
-                emailDetails.addProperty("from", emailMessage.getFrom());
-                emailDetails.addProperty("cc", emailMessage.getCc());
-                emailDetails.addProperty("bcc", emailMessage.getBcc());
-                emailDetails.addProperty("subject", emailMessage.getSubject());
-                emailDetails.addProperty("replyTo", emailMessage.getReplyTo());
-                emailDetails.addProperty("htmlContent", emailMessage.getHtmlContent());
-                emailDetails.addProperty("textContent", emailMessage.getTextContent());
-                resultJSON.add("email", emailDetails);
-                
+                JsonObject resultJSON = getResultJSON(emailMessage);
+
                 handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
-            } else if (emailIndex == null) {
-                JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
-                handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
-                handleException(format("%s Email Index is not set.", ERROR), messageContext);
             } else {
                 JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
                 handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
-                handleException(format("%s No emails retrieved. " +
-                        "Email list operation must be invoked first to retrieve emails.", ERROR), messageContext);
+                handleException(format("%s Email Id is not set.", ERROR), messageContext);
             }
-        } catch (InvalidConfigurationException e) {
+        }
+        catch (InvalidConfigurationException e) {
             JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
+        } catch (EmailConnectionException | EmailParsingException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private static @NotNull JsonObject getResultJSON(EmailMessage emailMessage) {
+        JsonObject resultJSON = new JsonObject();
+        JsonObject emailDetails = new JsonObject();
+        emailDetails.addProperty("emailID", emailMessage.getEmailId());
+        emailDetails.addProperty("to", emailMessage.getTo());
+        emailDetails.addProperty("from", emailMessage.getFrom());
+        emailDetails.addProperty("cc", emailMessage.getCc());
+        emailDetails.addProperty("bcc", emailMessage.getBcc());
+        emailDetails.addProperty("subject", emailMessage.getSubject());
+        emailDetails.addProperty("replyTo", emailMessage.getReplyTo());
+        emailDetails.addProperty("htmlContent", emailMessage.getHtmlContent());
+        emailDetails.addProperty("textContent", emailMessage.getTextContent());
+        resultJSON.add("email", emailDetails);
+        return resultJSON;
     }
 }

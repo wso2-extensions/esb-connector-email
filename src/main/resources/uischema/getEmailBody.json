@@ -10,21 +10,18 @@
         "groupName": "General",
         "elements": [
           {
-              "type": "attribute",
-              "value": {
-                "name": "configRef",
-                "displayName": "Connection",
-                "inputType": "connection",
-                "allowedConnectionTypes": [
-                  "IMAP",
-                  "IMAPS"
-                ],
-                "defaultType": "connection.imap",
-                "defaultValue": "",
-                "required": "true",
-                "helpTip": "Connection to be used"
-              }
-            },
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "Connection",
+              "inputType": "connection",
+              "allowedConnectionTypes": ["IMAP", "IMAPS"],
+              "defaultType": "connection.imap",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection to be used"
+            }
+          },
           {
             "type": "attributeGroup",
             "value": {
@@ -33,12 +30,23 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "emailIndex",
-                    "displayName": "Email Index",
+                    "name": "emailId",
+                    "displayName": "Email Id",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "Index of the email to be retrieved in the email response"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "folder",
+                    "displayName": "Folder",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "Inbox",
+                    "required": "true",
+                    "helpTip": "Folder to be searched for the email"
                   }
                 }
               ]

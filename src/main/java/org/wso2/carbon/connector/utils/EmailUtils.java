@@ -17,11 +17,11 @@
  */
 package org.wso2.carbon.connector.utils;
 
+import com.sun.mail.imap.IMAPMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.connection.EmailConnection;
 import org.wso2.carbon.connector.connection.EmailConnectionFactory;
 import org.wso2.carbon.connector.connection.EmailProtocol;
@@ -29,19 +29,20 @@ import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.connection.oauth.OAuthUtils;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
-import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
+import org.wso2.carbon.connector.exception.EmailParsingException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 
-import java.util.List;
+
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 import javax.mail.search.SearchTerm;
 
@@ -53,10 +54,6 @@ import static java.lang.String.format;
 public final class EmailUtils {
 
     private static final Log log = LogFactory.getLog(EmailUtils.class);
-
-    // Response constants
-    private static final String START_TAG = "<result><success>";
-    private static final String END_TAG = "</success></result>";
 
     private EmailUtils() {
 
@@ -88,7 +85,7 @@ public final class EmailUtils {
     /**
      * Tests the email connection using existing connection framework
      *
-     * @param messageContext Message Context
+     * @param configuration Connection configuration
      */
     public static void testConnection(ConnectionConfiguration configuration) throws EmailConnectionException {
         EmailConnection emailConnection = new EmailConnection(configuration);
@@ -210,21 +207,40 @@ public final class EmailUtils {
     /**
      * Gets email of respective index from list
      *
-     * @param emailMessages List of Email Messages
-     * @param emailIndex    Index of the email to be retrieved
+     * @param connection Mailbox connection to be used to connect to server
+     * @param emailId  Email ID of the message to be retrieved
+     * @param folderName Mailbox name
      * @return Email message in the relevant index
      */
-    public static EmailMessage getEmail(List<EmailMessage> emailMessages, String emailIndex)
-            throws InvalidConfigurationException {
-
-        EmailMessage message;
+    public static EmailMessage getEmail(MailBoxConnection connection, String emailId, String folderName)
+            throws EmailConnectionException, EmailParsingException {
+        EmailMessage parsedEmail;
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
-            message = emailMessages.get(Integer.parseInt(emailIndex));
-        } catch (IndexOutOfBoundsException e) {
-            throw new InvalidConfigurationException("Failed to retrieve email. Invalid index set for email index.", e);
+            Folder mailbox = connection.getFolder(folderName, Folder.READ_ONLY);
+            if (log.isDebugEnabled()) {
+                log.debug(format("Retrieving messages from Mail folder: %s ...", folderName));
+            }
+            SearchTerm searchTerm = new MessageIDTerm(emailId);
+            IMAPMessage[] messages = (IMAPMessage[]) mailbox.search(searchTerm);
+            if (messages.length == 1) {
+                Thread.currentThread().setContextClassLoader(javax.mail.Message.class.getClassLoader());
+                parsedEmail = new EmailMessage(messages[0]);
+            } else if (messages.length == 0) {
+                throw new EmailParsingException(format("No email found with ID: %s.", emailId), null);
+            } else {
+                throw new EmailParsingException(format("Multiple emails found with ID: %s.", emailId), null);
+            }
+        } catch (MessagingException e) {
+            throw new EmailConnectionException("Error occurred when searching emails. %s", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            connection.closeFolder(false);
         }
-        return message;
+        return parsedEmail;
     }
+
+
 
     /**
      * Gets attachment of respective index from list
@@ -251,6 +267,8 @@ public final class EmailUtils {
         }
         return attachment;
     }
+
+
 
     /**
      * Retrieves connection name from message context if configured as configKey attribute

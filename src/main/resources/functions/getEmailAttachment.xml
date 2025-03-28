@@ -16,13 +16,16 @@
   ~ under the License.
   -->
 <template xmlns="http://ws.apache.org/ns/synapse" name="getEmailAttachment">
-	<parameter name="emailIndex" description="Index of the email to be retrieved in the email response"/>
+	<parameter name="emailId" description="Index of the email to be retrieved in the email response"/>
+	<parameter name="folder" description="Folder name of the email to be retrieved in the email response"/>
 	<parameter name="attachmentIndex" description="Index of the attachment to be retrieved in the email response"/>
-  <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
-    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
+   <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+   <parameter name="overwriteBody"
+			  description="Replace the Message Body in Message Context with the response of the operation."/>
 	<sequence>
-		<property name="emailIndex" expression="$func:emailIndex"/>
+		<property name="emailId" expression="$func:emailId"/>
+		<property name="folder" expression="$func:folder"/>
 		<property name="attachmentIndex" expression="$func:attachmentIndex"/>
-		<class name="org.wso2.carbon.connector.operations.list.EmailGetAttachment" />
+		<class name="org.wso2.carbon.connector.operations.EmailGetAttachment" />
 	</sequence>
 </template>

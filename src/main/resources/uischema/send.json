@@ -34,7 +34,7 @@
                     "displayName": "From",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "The 'From' address of the message sender"
                   }
                 },
@@ -45,7 +45,7 @@
                     "displayName": "To",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "The recipient addresses of 'To' (primary) type"
                   }
                 },
@@ -114,7 +114,7 @@
                   "value": {
                     "name": "subject",
                     "displayName": "Subject",
-                    "inputType": "stringOrExpression",
+                    "inputType": "expressionTextArea",
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "The subject of the email"
@@ -125,9 +125,9 @@
                   "value": {
                     "name": "content",
                     "displayName": "Content",
-                    "inputType": "textOrExpression",
+                    "inputType": "expressionTextArea",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "Body of the message in any format"
                   }
                 },
