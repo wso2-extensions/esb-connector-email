@@ -69,12 +69,18 @@ public class EmailGetAttachment extends AbstractEmailConnectorOperation {
             connection = (MailBoxConnection) handler.getConnection(connectionName);
             emailMessage = EmailUtils.getEmail(connection, emailId, folder);
 
-        } catch (InvalidConfigurationException | EmailConnectionException e) {
+        } catch (InvalidConfigurationException e) {
             JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
         } catch (EmailParsingException e) {
-            throw new RuntimeException(e);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.RESPONSE_GENERATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(ERROR, e, messageContext);
+        } catch (EmailConnectionException e) {
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(ERROR, e, messageContext);
         }
 
         if (emailId != null && attachmentIndex != null && emailMessage != null) {

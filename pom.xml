@@ -219,12 +219,6 @@
             <version>1.5.13</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-core</artifactId>
-            <version>0.36.2</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
     <scm>
         <connection>scm:git:https://github.com/wso2-extensions/esb-connector-email</connection>
@@ -247,8 +241,8 @@
                 <version>3.7.0</version>
                 <configuration>
                     <encoding>UTF-8</encoding>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
