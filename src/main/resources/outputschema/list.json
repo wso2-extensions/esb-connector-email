@@ -18,7 +18,7 @@
                 "type": "integer",
                 "description": "Index of the email in the list"
               },
-              "emailID": {
+              "emailId": {
                 "type": "string",
                 "description": "Unique identifier for the email"
               },

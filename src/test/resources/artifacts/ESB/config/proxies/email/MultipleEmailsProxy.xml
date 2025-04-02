@@ -18,7 +18,7 @@
                         <emailIndex>{$ctx:index1}</emailIndex>
                     </email.getEmailBody>
                     <log level="custom">
-                        <property name="emailID" expression="get-property('EMAIL_ID')"/>
+                        <property name="emailId" expression="get-property('EMAIL_ID')"/>
                         <property name="to" expression="get-property('TO')"/>
                         <property name="cc" expression="get-property('CC')"/>
                         <property name="bcc" expression="get-property('BCC')"/>

@@ -119,7 +119,7 @@ public class EmailList extends AbstractEmailConnectorOperation {
             JsonObject emailObject = new JsonObject();
             
             emailObject.addProperty("index", i);
-            emailObject.addProperty("emailID", emailMessage.getEmailId());
+            emailObject.addProperty("emailId", emailMessage.getEmailId());
             emailObject.addProperty("to", emailMessage.getTo());
             emailObject.addProperty("from", emailMessage.getFrom());
             emailObject.addProperty("cc", emailMessage.getCc());

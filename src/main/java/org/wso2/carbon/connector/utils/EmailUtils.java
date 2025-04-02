@@ -142,13 +142,13 @@ public final class EmailUtils {
      *
      * @param connection Mailbox connection to be used to connect to server
      * @param folderName Mailbox name
-     * @param emailID    Email ID of the message of which the state is to be changed
+     * @param emailId    Email ID of the message of which the state is to be changed
      * @param flag       Flag to be set
      * @param expunge    whether to delete messages marked for deletion
      * @return true if the status update was successful, false otherwise
      * @throws EmailConnectionException thrown if failed to set the flags on the message
      */
-    public static boolean changeEmailState(MailBoxConnection connection, String folderName, String emailID,
+    public static boolean changeEmailState(MailBoxConnection connection, String folderName, String emailId,
                                            Flags.Flag flag, boolean expunge)
             throws EmailConnectionException, EmailNotFoundException, InvalidConfigurationException {
 
@@ -156,13 +156,13 @@ public final class EmailUtils {
         if (StringUtils.isEmpty(folderName)) {
             folderName = EmailConstants.DEFAULT_FOLDER;
         }
-        if (StringUtils.isEmpty(emailID)) {
+        if (StringUtils.isEmpty(emailId)) {
             throw new InvalidConfigurationException("Mandatory parameter 'Email ID' is not configured.");
         }
 
         try {
             Folder folder = connection.getFolder(folderName, Folder.READ_WRITE);
-            SearchTerm searchTerm = new MessageIDTerm(emailID);
+            SearchTerm searchTerm = new MessageIDTerm(emailId);
             Message[] messages = folder.search(searchTerm);
 
             if (messages.length > 0) {
@@ -171,12 +171,12 @@ public final class EmailUtils {
                     message.setFlag(flag, true);
                     success = true;
                     if (log.isDebugEnabled()) {
-                        log.debug(format("%s flag updated for message with ID: %s...", getFlagName(flag), emailID));
+                        log.debug(format("%s flag updated for message with ID: %s...", getFlagName(flag), emailId));
                     }
                 }
             } else {
-                log.error(format("No emails found with ID: %s.", emailID));
-                throw new EmailNotFoundException(format("No emails found with ID: %s.", emailID));
+                log.error(format("No emails found with ID: %s.", emailId));
+                throw new EmailNotFoundException(format("No emails found with ID: %s.", emailId));
             }
         } catch (MessagingException e) {
             throw new EmailConnectionException("Error occurred while changing email state.", e);

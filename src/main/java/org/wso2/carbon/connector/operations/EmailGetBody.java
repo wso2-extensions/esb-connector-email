@@ -77,15 +77,21 @@ public class EmailGetBody extends AbstractEmailConnectorOperation {
             JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(ERROR, e, messageContext);
-        } catch (EmailConnectionException | EmailParsingException e) {
-            throw new RuntimeException(e);
+        } catch (EmailConnectionException e) {
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.EMAIL_CONNECTION_ERROR);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(ERROR, e, messageContext);
+        } catch (EmailParsingException e) {
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.EMAIL_PARSING_ERROR);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            handleException(ERROR, e, messageContext);
         }
     }
 
     private static @NotNull JsonObject getResultJSON(EmailMessage emailMessage) {
         JsonObject resultJSON = new JsonObject();
         JsonObject emailDetails = new JsonObject();
-        emailDetails.addProperty("emailID", emailMessage.getEmailId());
+        emailDetails.addProperty("emailId", emailMessage.getEmailId());
         emailDetails.addProperty("to", emailMessage.getTo());
         emailDetails.addProperty("from", emailMessage.getFrom());
         emailDetails.addProperty("cc", emailMessage.getCc());

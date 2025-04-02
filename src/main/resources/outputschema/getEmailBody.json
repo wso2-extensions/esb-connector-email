@@ -12,7 +12,7 @@
           "type": "object",
           "description": "Email body details",
           "properties": {
-            "emailID": {
+            "emailId": {
               "type": "string",
               "description": "The unique identifier for the email"
             },

@@ -132,6 +132,3 @@ public class TestConnection extends AbstractConnector {
         return oAuthConfig;
     }
 }
-
-
-

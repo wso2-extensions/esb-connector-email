@@ -44,7 +44,7 @@ public class EmailMarkAsDeleted extends AbstractEmailConnectorOperation {
                         Boolean overwriteBody) throws ConnectException {
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
-        String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
+        String emailId = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
         String errorString = "Error occurred while marking email with ID: %s as deleted.";
         String connectionName = null;
         EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
@@ -52,18 +52,18 @@ public class EmailMarkAsDeleted extends AbstractEmailConnectorOperation {
         try {
             connectionName = EmailUtils.getConnectionName(messageContext);
             connection = (MailBoxConnection) handler.getConnection(connectionName);
-            boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.DELETED,
+            boolean status = EmailUtils.changeEmailState(connection, folder, emailId, Flags.Flag.DELETED,
                     false);
             JsonObject resultJSON = generateOperationResult(messageContext, status, null);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (EmailConnectionException e) {
             JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
-            handleException(format(errorString, emailID), e, messageContext);
+            handleException(format(errorString, emailId), e, messageContext);
         } catch (EmailNotFoundException e) {
             JsonObject resultJSON = generateOperationResult(messageContext, false, Error.EMAIL_NOT_FOUND);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
-            handleException(format(errorString, emailID), e, messageContext);
+            handleException(format(errorString, emailId), e, messageContext);
         } catch (InvalidConfigurationException e) {
             JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);

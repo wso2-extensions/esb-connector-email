@@ -39,14 +39,14 @@ public class EmailMarkAsRead extends AbstractEmailConnectorOperation {
                         Boolean overwriteBody) {
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
-        String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
+        String emailId = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
         String connectionName = null;
         EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
         try {
             connectionName = EmailUtils.getConnectionName(messageContext);
             connection = (MailBoxConnection) handler.getConnection(connectionName);
-            boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.SEEN,
+            boolean status = EmailUtils.changeEmailState(connection, folder, emailId, Flags.Flag.SEEN,
                     false);
             JsonObject resultJSON = generateOperationResult(messageContext, status, null);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);

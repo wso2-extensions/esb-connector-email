@@ -44,7 +44,7 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "emailID",
+                    "name": "emailId",
                     "displayName": "Email ID",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",

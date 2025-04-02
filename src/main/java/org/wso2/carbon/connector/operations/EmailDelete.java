@@ -46,14 +46,14 @@ public class EmailDelete extends AbstractEmailConnectorOperation {
         String errorString = "Error occurred while deleting email from folder: %s.";
 
         String folder = (String) getParameter(messageContext, EmailConstants.FOLDER);
-        String emailID = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
+        String emailId = (String) getParameter(messageContext, EmailConstants.EMAIL_ID);
         String connectionName = null;
         EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         MailBoxConnection connection = null;
         try {
             connectionName = EmailUtils.getConnectionName(messageContext);
             connection = (MailBoxConnection) handler.getConnection(connectionName);
-            boolean status = EmailUtils.changeEmailState(connection, folder, emailID, Flags.Flag.DELETED,
+            boolean status = EmailUtils.changeEmailState(connection, folder, emailId, Flags.Flag.DELETED,
                     true);
             JsonObject resultJSON = generateOperationResult(messageContext, status, null);
             handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
