@@ -1,7 +1,7 @@
 {
   "connectorName": "email",
   "connectionName": "POP3S",
-  "testConnectionEnabled": true,
+  "testConnectionEnabled": false,
   "title": "POP3 Secured Connection",
   "help": "<h1>Email Connector</h1> <b>The email connector supports IMAP, POP3 and SMTP protocols for handling emails</b>",
   "elements": [
