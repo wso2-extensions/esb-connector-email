@@ -23,5 +23,10 @@
 			<description>Init operation</description>
 			<hidden>true</hidden>
 		</component>
+    <component name="testconnection">
+			<file>testconnection.xml</file>
+			<hidden>true</hidden>
+			<description>Operation to test the connection for email connector.</description>
+		</component>
     </subComponents>    
 </component>

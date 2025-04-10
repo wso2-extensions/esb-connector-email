@@ -50,7 +50,7 @@ public class EmailMarkAsDeletedTest extends ConnectorIntegrationTestBase {
         MimeMessage[] messages = GreenMailServer.getInstance().getReceivedMessages();
         MimeMessage message = messages[0];
         JsonObject payload = new JsonObject();
-        payload.addProperty("emailID", message.getMessageID());
+        payload.addProperty("emailId", message.getMessageID());
         payload.addProperty("folder", "INBOX");
         HttpResponse response = HttpRequestUtil.doPost(new URL(getProxyServiceURLHttp("MarkAsDeleted")),
                 payload.toString(), esbRequestHeadersMap);
@@ -68,7 +68,7 @@ public class EmailMarkAsDeletedTest extends ConnectorIntegrationTestBase {
         MimeMessage[] messages = GreenMailServer.getInstance().getReceivedMessages();
         MimeMessage message = messages[0];
         JsonObject payload = new JsonObject();
-        payload.addProperty("emailID", message.getMessageID());
+        payload.addProperty("emailId", message.getMessageID());
         HttpResponse response = HttpRequestUtil.doPost(new URL(getProxyServiceURLHttp("MarkAsDeleted")),
                 payload.toString(), esbRequestHeadersMap);
         assertEquals(response.getData(), "{\"result\":{\"success\":true}}",

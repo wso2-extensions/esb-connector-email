@@ -30,6 +30,8 @@
 	<parameter name="offset" description="The index from which to retrieve emails"/>
 	<parameter name="limit" description="The number of emails to be retrieved"/>
 	<parameter name="folder" description="Name of the Mailbox folder to retrieve emails from"/>
+	<parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
 	<sequence>
 		<property name="deleteAfterRetrieve" expression="$func:deleteAfterRetrieve"/>
 		<property name="receivedSince" expression="$func:receivedSince"/>

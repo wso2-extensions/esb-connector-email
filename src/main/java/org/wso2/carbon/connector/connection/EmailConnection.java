@@ -28,8 +28,12 @@ import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.utils.EmailConstants;
 
 import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Store;
 
 import static java.lang.String.format;
 
@@ -46,6 +50,63 @@ public class EmailConnection implements Connection {
 
     private Session session;
     private EmailProtocol protocol;
+    /**
+     * Tests the connection with the email server
+     *
+     * @throws EmailConnectionException if the connection fails
+     */
+    public void testConnection() throws EmailConnectionException {
+        Store store = null;
+        try {
+            String protocolName = protocol.getName();
+            
+            if (protocolName == null || protocolName.isEmpty()) {
+                throw new EmailConnectionException("Protocol name is null or empty");
+            }
+            
+            // For SMTP/SMTPS protocols, we need to use Transport instead of Store
+            if (protocolName.toLowerCase().startsWith("smtp")) {
+                javax.mail.Transport transport = null;
+                try {
+                    transport = session.getTransport(protocolName);
+                    transport.connect();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Successfully connected to " + protocolName + " server");
+                    }
+                } finally {
+                    if (transport != null && transport.isConnected()) {
+                        try {
+                            transport.close();
+                        } catch (MessagingException e) {
+                            log.warn("Error closing transport connection: " + e.getMessage(), e);
+                        }
+                    }
+                }
+            } else {
+                // For IMAP/IMAPS/POP3/POP3S protocols, use Store
+                store = session.getStore(protocolName);
+                store.connect();
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully connected to " + protocolName + " server");
+                }
+            }
+        } catch (NoSuchProviderException e) {
+            throw new EmailConnectionException("Invalid email protocol provider: " + 
+                    (protocol != null ? protocol.getName() : "null"), e);
+        } catch (MessagingException e) {
+            throw new EmailConnectionException("Failed to establish connection with the email server: " + 
+                    e.getMessage(), e);
+        } finally {
+            // Close the store if it was opened
+            if (store != null && store.isConnected()) {
+                try {
+                    store.close();
+                } catch (MessagingException e) {
+                    log.warn("Error closing store connection: " + e.getMessage(), e);
+                }
+            }
+        }
+    }
 
     public EmailConnection(ConnectionConfiguration connectionConfiguration) throws EmailConnectionException {
 

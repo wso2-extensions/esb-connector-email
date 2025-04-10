@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Output Schema for getBody Operation",
+  "description": "Output schema for the getBody operation in the connector.",
+  "properties": {
+    "payload": {
+      "type": "object",
+      "description": "The main response payload from the getBody operation",
+      "properties": {
+        "email": {
+          "type": "object",
+          "description": "Email body details",
+          "properties": {
+            "emailId": {
+              "type": "string",
+              "description": "The unique identifier for the email"
+            },
+            "to": {
+              "type": "string",
+              "description": "Recipient email address"
+            },
+            "from": {
+              "type": "string",
+              "description": "Sender email address"
+            },
+            "cc": {
+              "type": "string",
+              "description": "Carbon copy recipients"
+            },
+            "bcc": {
+              "type": "string",
+              "description": "Blind carbon copy recipients"
+            },
+            "subject": {
+              "type": "string",
+              "description": "Email subject"
+            },
+            "replyTo": {
+              "type": "string",
+              "description": "Reply-to email address"
+            },
+            "htmlContent": {
+              "type": "string",
+              "description": "HTML content of the email"
+            },
+            "textContent": {
+              "type": "string",
+              "description": "Plain text content of the email"
+            }
+          }
+        },
+        "error": {
+          "type": "object",
+          "description": "Error details if operation failed",
+          "properties": {
+            "code": {
+              "type": "string",
+              "description": "Error code"
+            },
+            "message": {
+              "type": "string",
+              "description": "Error message"
+            },
+            "detail": {
+              "type": "string",
+              "description": "Detailed error information"
+            }
+          },
+          "required": ["code", "message", "detail"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": ["payload"],
+  "additionalProperties": false
+}

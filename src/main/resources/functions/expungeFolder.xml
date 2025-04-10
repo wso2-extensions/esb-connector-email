@@ -17,6 +17,8 @@
 -->
 <template xmlns="http://ws.apache.org/ns/synapse" name="expungeFolder">
     <parameter name="folder" description="Name of the mailbox folder where the emails with the DELETED flag are scheduled to be permanently deleted"/>
+    <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
     <sequence>
         <property name="folder" expression="$func:folder"/>
         <class name="org.wso2.carbon.connector.operations.EmailExpungeFolder" />

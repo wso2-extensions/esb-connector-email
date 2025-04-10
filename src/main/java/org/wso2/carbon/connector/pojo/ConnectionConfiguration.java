@@ -333,4 +333,20 @@ public class ConnectionConfiguration {
 
         this.oAuthConfig = oAuthConfig;
     }
+
+    public void setProtocolByName(String protocol) {
+        if (protocol.equalsIgnoreCase("smtp")) {
+            this.protocol = EmailProtocol.SMTP;
+        } else if (protocol.equalsIgnoreCase("pop3")) {
+            this.protocol = EmailProtocol.POP3;
+        } else if (protocol.equalsIgnoreCase("imap")) {
+            this.protocol = EmailProtocol.IMAP;
+        } else if (protocol.equalsIgnoreCase("pop3s")) {
+            this.protocol = EmailProtocol.POP3S;
+        } else if (protocol.equalsIgnoreCase("imaps")) {
+            this.protocol = EmailProtocol.IMAPS;
+        } else if (protocol.equalsIgnoreCase("smtps")) {
+            this.protocol = EmailProtocol.SMTPS;
+        }
+    }
 }
