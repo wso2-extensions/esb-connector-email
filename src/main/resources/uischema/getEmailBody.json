@@ -10,6 +10,19 @@
         "groupName": "General",
         "elements": [
           {
+            "type": "attribute",
+            "value": {
+              "name": "configRef",
+              "displayName": "Connection",
+              "inputType": "connection",
+              "allowedConnectionTypes": ["IMAP", "IMAPS"],
+              "defaultType": "connection.imap",
+              "defaultValue": "",
+              "required": "true",
+              "helpTip": "Connection to be used"
+            }
+          },
+          {
             "type": "attributeGroup",
             "value": {
               "groupName": "Basic",
@@ -17,12 +30,53 @@
                 {
                   "type": "attribute",
                   "value": {
-                    "name": "emailIndex",
-                    "displayName": "Email Index",
+                    "name": "emailId",
+                    "displayName": "Email Id",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
                     "required": "true",
                     "helpTip": "Index of the email to be retrieved in the email response"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "folder",
+                    "displayName": "Folder",
+                    "inputType": "stringOrExpression",
+                    "defaultValue": "Inbox",
+                    "required": "true",
+                    "helpTip": "Folder to be searched for the email"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Output",
+              "elements": [
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "responseVariable",
+                    "displayName": "Output Variable Name",
+                    "inputType": "string",
+                    "deriveResponseVariable": "true",
+                    "required": "true",
+                    "helpTip": "Name of the variable to which the output of the operation should be assigned"
+                  }
+                },
+                {
+                  "type": "attribute",
+                  "value": {
+                    "name": "overwriteBody",
+                    "displayName": "Overwrite Message Body",
+                    "inputType": "checkbox",
+                    "defaultValue": "false",
+                    "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
+                    "required": "false"
                   }
                 }
               ]

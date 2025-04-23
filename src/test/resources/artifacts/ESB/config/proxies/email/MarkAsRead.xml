@@ -4,7 +4,7 @@
         <inSequence>
             <email.markAsRead configKey="imapEmailConn">
                 <folder>{json-eval($.folder)}</folder>
-                <emailID>{json-eval($.emailID)}</emailID>
+                <emailId>{json-eval($.emailId)}</emailId>
             </email.markAsRead>
             <respond/>
         </inSequence>

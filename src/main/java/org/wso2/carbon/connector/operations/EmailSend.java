@@ -17,15 +17,17 @@
  */
 package org.wso2.carbon.connector.operations;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
+import org.apache.synapse.util.InlineExpressionUtil;
+import org.jaxen.JaxenException;
 import org.wso2.carbon.connector.connection.EmailConnection;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
-import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
-import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
@@ -43,28 +45,29 @@ import static java.lang.String.format;
 /**
  * Sends an email
  */
-public class EmailSend extends AbstractConnector {
+public class EmailSend extends AbstractEmailConnectorOperation {
 
     private static final String EMAIL_CONNECTOR_HEADER_PREFIX = "EMAIL-HEADER";
     private static final String HEADER_NAME_SEPARATOR = ":";
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable,
+                        Boolean overwriteBody) throws ConnectException {
 
         EmailConnectionHandler handler = EmailConnectionHandler.getConnectionHandler();
         try {
             String name = EmailUtils.getConnectionName(messageContext);
             EmailConnection connection = (EmailConnection) handler.getConnection(name);
             sendMessage(messageContext, connection);
-            EmailUtils.generateOutput(messageContext, true);
+            JsonObject resultJSON = generateOperationResult(messageContext, true, null);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
         } catch (EmailConnectionException | ConnectException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(e.getMessage(), e, messageContext);
-        } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
-            handleException(e.getMessage(), e, messageContext);
-        } catch (ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+        } catch (InvalidConfigurationException | JaxenException e) {
+            JsonObject resultJSON = generateOperationResult(messageContext, false, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(e.getMessage(), e, messageContext);
         }
     }
@@ -76,7 +79,7 @@ public class EmailSend extends AbstractConnector {
      * @param session        Mail Session to be used
      */
     private void sendMessage(MessageContext messageContext, EmailConnection session) throws EmailConnectionException,
-            InvalidConfigurationException {
+            InvalidConfigurationException, JaxenException {
 
         String to = (String) getParameter(messageContext, EmailConstants.TO);
         String from = (String) getParameter(messageContext, EmailConstants.FROM);
@@ -84,13 +87,16 @@ public class EmailSend extends AbstractConnector {
         String cc = (String) getParameter(messageContext, EmailConstants.CC);
         String bcc = (String) getParameter(messageContext, EmailConstants.BCC);
         String replyTo = (String) getParameter(messageContext, EmailConstants.REPLY_TO);
-        String subject = (String) getParameter(messageContext, EmailConstants.SUBJECT);
-        String content = (String) getParameter(messageContext, EmailConstants.CONTENT);
+        String rawSubject = (String) getParameter(messageContext, EmailConstants.SUBJECT);
+        String preprocessedContent = (String) getParameter(messageContext, EmailConstants.CONTENT);
         String attachments = (String) getParameter(messageContext, EmailConstants.ATTACHMENTS);
         String inlineImages = (String) getParameter(messageContext, EmailConstants.INLINE_IMAGES);
         String contentType = (String) getParameter(messageContext, EmailConstants.CONTENT_TYPE);
         String encoding = (String) getParameter(messageContext, EmailConstants.ENCODING);
         String contentTransferEncoding = (String) getParameter(messageContext, EmailConstants.CONTENT_TRANSFER_ENCODING);
+
+        String subject = InlineExpressionUtil.processInLineSynapseExpressionTemplate(messageContext, rawSubject);
+        String content = InlineExpressionUtil.processInLineSynapseExpressionTemplate(messageContext,preprocessedContent);
 
         if (StringUtils.isEmpty(to) && StringUtils.isEmpty(cc) && StringUtils.isEmpty(bcc)) {
             throw new InvalidConfigurationException("Error occurred while sending the email. " +

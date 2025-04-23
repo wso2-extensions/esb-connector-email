@@ -15,10 +15,7 @@
               "name": "configRef",
               "displayName": "Connection",
               "inputType": "connection",
-              "allowedConnectionTypes": [
-                "SMTP",
-                "SMTPS"
-              ],
+              "allowedConnectionTypes": ["SMTP", "SMTPS"],
               "defaultType": "connection.smtp",
               "defaultValue": "",
               "required": "true",
@@ -28,7 +25,7 @@
           {
             "type": "attributeGroup",
             "value": {
-              "groupName": "Basic",
+              "groupName": "Sender & Receiver Information",
               "elements": [
                 {
                   "type": "attribute",
@@ -37,19 +34,8 @@
                     "displayName": "From",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "The 'From' address of the message sender"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "personalName",
-                    "displayName": "PersonalName",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The personal name of the message sender"
                   }
                 },
                 {
@@ -59,49 +45,76 @@
                     "displayName": "To",
                     "inputType": "stringOrExpression",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "The recipient addresses of 'To' (primary) type"
                   }
                 },
                 {
-                  "type": "attribute",
+                  "type": "attributeGroup",
                   "value": {
-                    "name": "cc",
-                    "displayName": "CC",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The recipient addresses of 'CC' (carbon copy) type"
+                    "groupName": "Advanced",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "personalName",
+                          "displayName": "Sender Name",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The personal name of the message sender"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "cc",
+                          "displayName": "CC",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The recipient addresses of 'CC' (carbon copy) type"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "bcc",
+                          "displayName": "BCC",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The recipient addresses of 'BCC' (blind carbon copy) type"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "replyTo",
+                          "displayName": "Reply To",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "",
+                          "required": "false",
+                          "helpTip": "The email addresses to which to reply to this email"
+                        }
+                      }
+                    ]
                   }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "bcc",
-                    "displayName": "BCC",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The recipient addresses of 'BCC' (blind carbon copy) type"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "replyTo",
-                    "displayName": "Reply To",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "",
-                    "required": "false",
-                    "helpTip": "The email addresses to which to reply to this email"
-                  }
-                },
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Message Details",
+              "elements": [
                 {
                   "type": "attribute",
                   "value": {
                     "name": "subject",
                     "displayName": "Subject",
-                    "inputType": "stringOrExpression",
+                    "inputType": "expressionTextArea",
                     "defaultValue": "",
                     "required": "false",
                     "helpTip": "The subject of the email"
@@ -112,12 +125,62 @@
                   "value": {
                     "name": "content",
                     "displayName": "Content",
-                    "inputType": "textOrExpression",
+                    "inputType": "expressionTextArea",
                     "defaultValue": "",
-                    "required": "false",
+                    "required": "true",
                     "helpTip": "Body of the message in any format"
                   }
                 },
+                {
+                  "type": "attributeGroup",
+                  "value": {
+                    "groupName": "Advanced",
+                    "elements": [
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "contentType",
+                          "displayName": "Content Type",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "text/html",
+                          "required": "false",
+                          "helpTip": "Content Type of the body"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "encoding",
+                          "displayName": "Encoding",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "UTF-8",
+                          "required": "false",
+                          "helpTip": "The character encoding of the body"
+                        }
+                      },
+                      {
+                        "type": "attribute",
+                        "value": {
+                          "name": "contentTransferEncoding",
+                          "displayName": "Content Transfer Encoding",
+                          "inputType": "stringOrExpression",
+                          "defaultValue": "Base64",
+                          "required": "false",
+                          "helpTip": "Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport"
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "attributeGroup",
+            "value": {
+              "groupName": "Attachments & Embedded Content",
+              "isCollapsed": true,
+              "elements": [
                 {
                   "type": "attribute",
                   "value": {
@@ -142,46 +205,35 @@
                 }
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "type": "attributeGroup",
+      "value": {
+        "groupName": "Output",
+        "elements": [
+          {
+            "type": "attribute",
+            "value": {
+              "name": "responseVariable",
+              "displayName": "Output Variable Name",
+              "inputType": "string",
+              "deriveResponseVariable": "true",
+              "required": "true",
+              "helpTip": "Name of the variable to which the output of the operation should be assigned"
+            }
           },
           {
-            "type": "attributeGroup",
+            "type": "attribute",
             "value": {
-              "groupName": "Advanced",
-              "elements": [
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "contentType",
-                    "displayName": "Content Type",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "text/html",
-                    "required": "false",
-                    "helpTip": "Content Type of the body"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "encoding",
-                    "displayName": "Encoding",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "UTF-8",
-                    "required": "false",
-                    "helpTip": "The character encoding of the body"
-                  }
-                },
-                {
-                  "type": "attribute",
-                  "value": {
-                    "name": "contentTransferEncoding",
-                    "displayName": "Content Transfer Encoding",
-                    "inputType": "stringOrExpression",
-                    "defaultValue": "Base64",
-                    "required": "false",
-                    "helpTip": "Encoding used to indicate the type of transformation that is used to represent the body in an acceptable manner for transport"
-                  }
-                }
-              ]
+              "name": "overwriteBody",
+              "displayName": "Overwrite Message Body",
+              "inputType": "checkbox",
+              "defaultValue": "false",
+              "helpTip": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable).",
+              "required": "false"
             }
           }
         ]

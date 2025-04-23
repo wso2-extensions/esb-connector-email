@@ -17,10 +17,12 @@
 -->
 <template xmlns="http://ws.apache.org/ns/synapse" name="delete">
 	<parameter name="folder" description="Name of the mailbox folder from which to delete the emails"/>
-	<parameter name="emailID" description="Email ID Number of the email to delete"/>
+	<parameter name="emailId" description="Email ID Number of the email to delete"/>
+   <parameter name="responseVariable" description="The name of the variable to which the response should be stored."/>
+    <parameter name="overwriteBody" description="Replace the Message Body in Message Context with the response of the operation."/>
 	<sequence>
 		<property name="folder" expression="$func:folder"/>
-		<property name="emailID" expression="$func:emailID"/>
+		<property name="emailId" expression="$func:emailId"/>
 		<class name="org.wso2.carbon.connector.operations.EmailDelete" />
 	</sequence>
 </template>

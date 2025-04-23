@@ -17,24 +17,21 @@
  */
 package org.wso2.carbon.connector.operations;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPFactory;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.synapse.MessageContext;
 import org.wso2.carbon.connector.connection.MailBoxConnection;
-import org.wso2.carbon.connector.core.AbstractConnector;
 import org.wso2.carbon.connector.core.ConnectException;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
-import org.wso2.carbon.connector.core.exception.ContentBuilderException;
 import org.wso2.carbon.connector.core.util.ConnectorUtils;
-import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailParsingException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 import org.wso2.carbon.connector.pojo.MailboxConfiguration;
+import org.wso2.carbon.connector.utils.AbstractEmailConnectorOperation;
 import org.wso2.carbon.connector.utils.EmailConstants;
 import org.wso2.carbon.connector.utils.EmailUtils;
 import org.wso2.carbon.connector.utils.Error;
@@ -59,7 +56,6 @@ import javax.mail.search.FromTerm;
 import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
-import javax.xml.namespace.QName;
 
 import static java.lang.String.format;
 import static java.util.Date.from;
@@ -67,25 +63,11 @@ import static java.util.Date.from;
 /**
  * Lists emails
  */
-public class EmailList extends AbstractConnector {
-
-    private static final QName EMAILS_ELEMENT = new QName("emails");
-    private static final QName EMAIL_ELEMENT = new QName("email");
-    private static final QName ATTACHMENTS_ELEMENT = new QName("attachments");
-    private static final QName ATTACHMENT_ELEMENT = new QName("attachment");
-    private static final QName INDEX_ELEMENT = new QName("index");
-    private static final QName EMAIL_ID_ELEMENT = new QName("emailID");
-    private static final QName EMAIL_TO_ELEMENT = new QName("to");
-    private static final QName EMAIL_FROM_ELEMENT = new QName("from");
-    private static final QName EMAIL_CC_ELEMENT = new QName("cc");
-    private static final QName EMAIL_BCC_ELEMENT = new QName("bcc");
-    private static final QName EMAIL_REPLY_TO_ELEMENT = new QName("replyTo");
-    private static final QName EMAIL_SUBJECT_ELEMENT = new QName("subject");
-    private static final QName ATTACHMENT_CONTENT_TYPE = new QName("contentType");
-    private static final QName ATTACHMENT_NAME = new QName("name");
+public class EmailList extends AbstractEmailConnectorOperation {
 
     @Override
-    public void connect(MessageContext messageContext) {
+    public void execute(MessageContext messageContext, String responseVariable,
+                        Boolean overwriteBody) throws ConnectException {
 
         String errorString = "Error occurred while retrieving messages from folder: %s.";
         String connectionName = null;
@@ -99,15 +81,22 @@ public class EmailList extends AbstractConnector {
             folderName = mailboxConfiguration.getFolder();
             List<EmailMessage> messageList = retrieveMessages(connection, mailboxConfiguration);
             messageContext.setProperty(ResponseConstants.PROPERTY_EMAILS, messageList);
-            setEmailListResponse(messageList, messageContext);
-        } catch (EmailConnectionException | ConnectException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.CONNECTIVITY);
+            JsonObject resultJSON = new JsonObject();
+            JsonArray emailsArray = createEmailJsonArray(messageList);
+            resultJSON.add("emails", emailsArray);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
+            
+        } catch (EmailConnectionException e) {
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.CONNECTIVITY);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
         } catch (InvalidConfigurationException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.INVALID_CONFIGURATION);
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.INVALID_CONFIGURATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
-        } catch (EmailParsingException | ContentBuilderException e) {
-            EmailUtils.setErrorsInMessage(messageContext, Error.RESPONSE_GENERATION);
+        } catch (EmailParsingException e) {
+            JsonObject resultJSON = generateErrorResult(messageContext, Error.RESPONSE_GENERATION);
+            handleConnectorResponse(messageContext, responseVariable, overwriteBody, resultJSON, null, null);
             handleException(format(errorString, folderName), e, messageContext);
         } finally {
             if (connection != null) {
@@ -117,62 +106,44 @@ public class EmailList extends AbstractConnector {
     }
 
     /**
-     * Sets email response in body
+     * Creates a JSON array of email messages
      *
-     * @param emailMessages  List of emails
-     * @param messageContext The message context that is processed
+     * @param emailMessages List of emails
+     * @return JSON array of email information
      */
-    private static void setEmailListResponse(List<EmailMessage> emailMessages, MessageContext messageContext)
-            throws ContentBuilderException {
-
-        org.apache.axis2.context.MessageContext axis2MsgCtx = ((org.apache.synapse.core.axis2.
-                Axis2MessageContext) messageContext).getAxis2MessageContext();
-
-        SOAPFactory factory = OMAbstractFactory.getSOAP12Factory();
-        OMElement emailsElement = factory.createOMElement(EMAILS_ELEMENT);
+    private JsonArray createEmailJsonArray(List<EmailMessage> emailMessages) {
+        JsonArray emailsArray = new JsonArray();
+        
         for (int i = 0; i < emailMessages.size(); i++) {
             EmailMessage emailMessage = emailMessages.get(i);
-            OMElement emailElement = factory.createOMElement(EMAIL_ELEMENT);
-            addTextElement(factory, emailElement, INDEX_ELEMENT, Integer.toString(i));
-            addTextElement(factory, emailElement, EMAIL_ID_ELEMENT, emailMessage.getEmailId());
-            addTextElement(factory, emailElement, EMAIL_TO_ELEMENT, emailMessage.getTo());
-            addTextElement(factory, emailElement, EMAIL_FROM_ELEMENT, emailMessage.getFrom());
-            addTextElement(factory, emailElement, EMAIL_CC_ELEMENT, emailMessage.getCc());
-            addTextElement(factory, emailElement, EMAIL_BCC_ELEMENT, emailMessage.getBcc());
-            addTextElement(factory, emailElement, EMAIL_REPLY_TO_ELEMENT, emailMessage.getReplyTo());
-            addTextElement(factory, emailElement, EMAIL_SUBJECT_ELEMENT, emailMessage.getSubject());
-            if (emailMessage.getAttachments() != null){
-                OMElement attachmentsElement = factory.createOMElement(ATTACHMENTS_ELEMENT);
+            JsonObject emailObject = new JsonObject();
+            
+            emailObject.addProperty("index", i);
+            emailObject.addProperty("emailId", emailMessage.getEmailId());
+            emailObject.addProperty("to", emailMessage.getTo());
+            emailObject.addProperty("from", emailMessage.getFrom());
+            emailObject.addProperty("cc", emailMessage.getCc());
+            emailObject.addProperty("bcc", emailMessage.getBcc());
+            emailObject.addProperty("replyTo", emailMessage.getReplyTo());
+            emailObject.addProperty("subject", emailMessage.getSubject());
+            
+            if (emailMessage.getAttachments() != null && !emailMessage.getAttachments().isEmpty()) {
+                JsonArray attachmentsArray = new JsonArray();
                 for (int j = 0; j < emailMessage.getAttachments().size(); j++) {
                     Attachment attachment = emailMessage.getAttachments().get(j);
-                    OMElement attachmentElement = factory.createOMElement(ATTACHMENT_ELEMENT);
-                    addTextElement(factory, attachmentElement, INDEX_ELEMENT, Integer.toString(j));
-                    addTextElement(factory, attachmentElement, ATTACHMENT_NAME, attachment.getName());
-                    addTextElement(factory, attachmentElement, ATTACHMENT_CONTENT_TYPE, attachment.getContentType());
-                    attachmentsElement.addChild(attachmentElement);
+                    JsonObject attachmentObject = new JsonObject();
+                    attachmentObject.addProperty("index", j);
+                    attachmentObject.addProperty("name", attachment.getName());
+                    attachmentObject.addProperty("contentType", attachment.getContentType());
+                    attachmentsArray.add(attachmentObject);
                 }
-                emailElement.addChild(attachmentsElement);
+                emailObject.add("attachments", attachmentsArray);
             }
-            emailsElement.addChild(emailElement);
+            
+            emailsArray.add(emailObject);
         }
-        PayloadUtils.setPayloadInEnvelope(axis2MsgCtx, emailsElement);
-    }
-
-    /**
-     * Adds text element to parent OMElement
-     *
-     * @param factory SOAP factory to create element
-     * @param parent  Parent OMElement
-     * @param qName   QName of the new text element
-     * @param value   Value of the new text element
-     */
-    private static void addTextElement(SOAPFactory factory, OMElement parent, QName qName, String value) {
-
-        if (StringUtils.isNotEmpty(value)) {
-            OMElement newElement = factory.createOMElement(qName);
-            newElement.addChild(factory.createOMText(value));
-            parent.addChild(newElement);
-        }
+        
+        return emailsArray;
     }
 
     /**
@@ -182,7 +153,7 @@ public class EmailList extends AbstractConnector {
      * @return Parsed messages
      * @throws EmailParsingException if failed to parse content
      */
-    private static List<EmailMessage> parseMessageList(List<Message> messages) throws EmailParsingException {
+    public static List<EmailMessage> parseMessageList(List<Message> messages) throws EmailParsingException {
 
         List<EmailMessage> messagesList = new ArrayList<>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

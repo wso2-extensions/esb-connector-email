@@ -24,10 +24,13 @@ public final class ResponseConstants {
 
     public static final String RESPONSE_CONTENT_TYPE = "application/xml";
 
+    // Attachment Attributes
+    public static final String ATTACHMENT_TYPE = "ATTACHMENT_TYPE";
+    public static final String ATTACHMENT_NAME = "ATTACHMENT_NAME";
+    public static final String BASE64_ENCODED = "base64Encoded";
+
     // Properties set in the message context which contains data returned by the operation
     public static final String PROPERTY_EMAILS = "PROPERTY_EMAILS";
-    public static final String PROPERTY_ATTACHMENT_TYPE = "ATTACHMENT_TYPE";
-    public static final String PROPERTY_ATTACHMENT_NAME = "ATTACHMENT_NAME";
     public static final String PROPERTY_HTML_CONTENT = "HTML_CONTENT";
     public static final String PROPERTY_TEXT_CONTENT = "TEXT_CONTENT";
     public static final String PROPERTY_EMAIL_ID = "EMAIL_ID";
@@ -39,7 +42,11 @@ public final class ResponseConstants {
     public static final String PROPERTY_EMAIL_REPLY_TO = "REPLY_TO";
     public static final String PROPERTY_ERROR_CODE = "ERROR_CODE";
     public static final String PROPERTY_ERROR_MESSAGE = "ERROR_MESSAGE";
-
+    public static final String RESPONSE_VARIABLE = "responseVariable";
+    public static final String OVERWRITE_BODY = "overwriteBody";
+    public final static String JSON_CONTENT_TYPE = "application/json";
+    public static final String STATUS_CODE = "HTTP_SC";
+    public static final Object HTTP_STATUS_500 = "500";
     private ResponseConstants() {
 
     }

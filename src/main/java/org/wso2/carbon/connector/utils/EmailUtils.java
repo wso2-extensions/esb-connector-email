@@ -17,11 +17,11 @@
  */
 package org.wso2.carbon.connector.utils;
 
+import com.sun.mail.imap.IMAPMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.MessageContext;
-import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.wso2.carbon.connector.connection.EmailConnection;
 import org.wso2.carbon.connector.connection.EmailConnectionFactory;
 import org.wso2.carbon.connector.connection.EmailProtocol;
@@ -29,19 +29,20 @@ import org.wso2.carbon.connector.connection.MailBoxConnection;
 import org.wso2.carbon.connector.connection.oauth.OAuthUtils;
 import org.wso2.carbon.connector.connection.EmailConnectionHandler;
 import org.wso2.carbon.connector.core.exception.ContentBuilderException;
-import org.wso2.carbon.connector.core.util.PayloadUtils;
 import org.wso2.carbon.connector.exception.EmailConnectionException;
 import org.wso2.carbon.connector.exception.EmailNotFoundException;
+import org.wso2.carbon.connector.exception.EmailParsingException;
 import org.wso2.carbon.connector.exception.InvalidConfigurationException;
 import org.wso2.carbon.connector.pojo.Attachment;
 import org.wso2.carbon.connector.pojo.ConnectionConfiguration;
 import org.wso2.carbon.connector.pojo.EmailMessage;
 
-import java.util.List;
+
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import javax.mail.search.MessageIDTerm;
 import javax.mail.search.SearchTerm;
 
@@ -54,12 +55,41 @@ public final class EmailUtils {
 
     private static final Log log = LogFactory.getLog(EmailUtils.class);
 
-    // Response constants
-    private static final String START_TAG = "<result><success>";
-    private static final String END_TAG = "</success></result>";
-
     private EmailUtils() {
 
+    }
+
+    /**
+     * Converts an input stream to a Base64 encoded string
+     *
+     * @param inputStream The input stream to convert
+     * @return Base64 encoded string representation of the input stream
+     * @throws ContentBuilderException if an error occurs during conversion
+     */
+    public static String convertInputStreamToBase64(java.io.InputStream inputStream) throws ContentBuilderException {
+        try {
+            if (inputStream == null) {
+                return null;
+            }
+            
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            
+            return java.util.Base64.getEncoder().encodeToString(bytes);
+        } catch (java.io.IOException e) {
+            throw new ContentBuilderException("Error while converting input stream to Base64", e);
+        }
+    }
+
+
+    /**
+     * Tests the email connection using existing connection framework
+     *
+     * @param configuration Connection configuration
+     */
+    public static void testConnection(ConnectionConfiguration configuration) throws EmailConnectionException {
+        EmailConnection emailConnection = new EmailConnection(configuration);
+        emailConnection.testConnection();
     }
 
     /**
@@ -112,13 +142,13 @@ public final class EmailUtils {
      *
      * @param connection Mailbox connection to be used to connect to server
      * @param folderName Mailbox name
-     * @param emailID    Email ID of the message of which the state is to be changed
+     * @param emailId    Email ID of the message of which the state is to be changed
      * @param flag       Flag to be set
      * @param expunge    whether to delete messages marked for deletion
      * @return true if the status update was successful, false otherwise
      * @throws EmailConnectionException thrown if failed to set the flags on the message
      */
-    public static boolean changeEmailState(MailBoxConnection connection, String folderName, String emailID,
+    public static boolean changeEmailState(MailBoxConnection connection, String folderName, String emailId,
                                            Flags.Flag flag, boolean expunge)
             throws EmailConnectionException, EmailNotFoundException, InvalidConfigurationException {
 
@@ -126,13 +156,13 @@ public final class EmailUtils {
         if (StringUtils.isEmpty(folderName)) {
             folderName = EmailConstants.DEFAULT_FOLDER;
         }
-        if (StringUtils.isEmpty(emailID)) {
+        if (StringUtils.isEmpty(emailId)) {
             throw new InvalidConfigurationException("Mandatory parameter 'Email ID' is not configured.");
         }
 
         try {
             Folder folder = connection.getFolder(folderName, Folder.READ_WRITE);
-            SearchTerm searchTerm = new MessageIDTerm(emailID);
+            SearchTerm searchTerm = new MessageIDTerm(emailId);
             Message[] messages = folder.search(searchTerm);
 
             if (messages.length > 0) {
@@ -141,12 +171,12 @@ public final class EmailUtils {
                     message.setFlag(flag, true);
                     success = true;
                     if (log.isDebugEnabled()) {
-                        log.debug(format("%s flag updated for message with ID: %s...", getFlagName(flag), emailID));
+                        log.debug(format("%s flag updated for message with ID: %s...", getFlagName(flag), emailId));
                     }
                 }
             } else {
-                log.error(format("No emails found with ID: %s.", emailID));
-                throw new EmailNotFoundException(format("No emails found with ID: %s.", emailID));
+                log.error(format("No emails found with ID: %s.", emailId));
+                throw new EmailNotFoundException(format("No emails found with ID: %s.", emailId));
             }
         } catch (MessagingException e) {
             throw new EmailConnectionException("Error occurred while changing email state.", e);
@@ -177,21 +207,40 @@ public final class EmailUtils {
     /**
      * Gets email of respective index from list
      *
-     * @param emailMessages List of Email Messages
-     * @param emailIndex    Index of the email to be retrieved
+     * @param connection Mailbox connection to be used to connect to server
+     * @param emailId  Email ID of the message to be retrieved
+     * @param folderName Mailbox name
      * @return Email message in the relevant index
      */
-    public static EmailMessage getEmail(List<EmailMessage> emailMessages, String emailIndex)
-            throws InvalidConfigurationException {
-
-        EmailMessage message;
+    public static EmailMessage getEmail(MailBoxConnection connection, String emailId, String folderName)
+            throws EmailConnectionException, EmailParsingException {
+        EmailMessage parsedEmail;
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         try {
-            message = emailMessages.get(Integer.parseInt(emailIndex));
-        } catch (IndexOutOfBoundsException e) {
-            throw new InvalidConfigurationException("Failed to retrieve email. Invalid index set for email index.", e);
+            Folder mailbox = connection.getFolder(folderName, Folder.READ_ONLY);
+            if (log.isDebugEnabled()) {
+                log.debug(format("Retrieving messages from Mail folder: %s ...", folderName));
+            }
+            SearchTerm searchTerm = new MessageIDTerm(emailId);
+            IMAPMessage[] messages = (IMAPMessage[]) mailbox.search(searchTerm);
+            if (messages.length == 1) {
+                Thread.currentThread().setContextClassLoader(javax.mail.Message.class.getClassLoader());
+                parsedEmail = new EmailMessage(messages[0]);
+            } else if (messages.length == 0) {
+                throw new EmailParsingException(format("No email found with ID: %s.", emailId), null);
+            } else {
+                throw new EmailParsingException(format("Multiple emails found with ID: %s.", emailId), null);
+            }
+        } catch (MessagingException e) {
+            throw new EmailConnectionException("Error occurred when searching emails. %s", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(classLoader);
+            connection.closeFolder(false);
         }
-        return message;
+        return parsedEmail;
     }
+
+
 
     /**
      * Gets attachment of respective index from list
@@ -219,6 +268,8 @@ public final class EmailUtils {
         return attachment;
     }
 
+
+
     /**
      * Retrieves connection name from message context if configured as configKey attribute
      * or from the template parameter
@@ -233,19 +284,6 @@ public final class EmailUtils {
             throw new InvalidConfigurationException("Connection name is not set.");
         }
         return connectionName;
-    }
-
-    /**
-     * Generates the output payload with result status
-     *
-     * @param messageContext The message context that is processed
-     * @param resultStatus   Result of the status
-     */
-    public static void generateOutput(MessageContext messageContext, boolean resultStatus)
-            throws ContentBuilderException {
-
-        String response = START_TAG + resultStatus + END_TAG;
-        PayloadUtils.preparePayload(((Axis2MessageContext) messageContext).getAxis2MessageContext(), response);
     }
 
     /**

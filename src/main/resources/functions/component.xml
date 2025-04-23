@@ -19,34 +19,42 @@
 <component name="functions" type="synapse/template" >
     <subComponents>
 		<component name="list" >
+			<displayName>List</displayName>
 			<file>list.xml</file>
 			<description>List all the emails.</description>
 		</component>
 		<component name="expungeFolder" >
+			<displayName>Expunge Folder</displayName>
 			<file>expungeFolder.xml</file>
 			<description>Delete all the messages scheduled for deletion with the DELETED flag set from the mailbox.</description>
 		</component>
 		<component name="markAsDeleted" >
+			<displayName>Mark As Deleted</displayName>
 			<file>markAsDeleted.xml</file>
 			<description>Mark an incoming email as DELETED. Not physically deleted, only a state change.</description>
 		</component>
 		<component name="markAsRead" >
+			<displayName>Mark As Read</displayName>
 			<file>markAsRead.xml</file>
 			<description>Marks a single email as READ changing its state in the specified mailbox folder.</description>
 		</component>
 		<component name="send" >
+			<displayName>Send</displayName>
 			<file>send.xml</file>
 			<description>Sends an email message.</description>
 		</component>
 		<component name="delete" >
+			<displayName>Delete</displayName>
 			<file>delete.xml</file>
 			<description>Deletes an email.</description>
 		</component>
 		<component name="getEmailBody" >
+			<displayName>Get Email Body</displayName>
 			<file>getEmailBody.xml</file>
 			<description>Retrieves email body by index.</description>
 		</component>
 		<component name="getEmailAttachment" >
+			<displayName>Get Email Attachment</displayName>
 			<file>getEmailAttachment.xml</file>
 			<description>Retrieves email attachment by index.</description>
 		</component>

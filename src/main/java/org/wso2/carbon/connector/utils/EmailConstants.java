@@ -53,7 +53,7 @@ public final class EmailConstants {
     public static final String SCOPE = "scope";
     public static final String AUTH_MECHANISM_XOAUTH2 = "XOAUTH2";
     public static final String FOLDER = "folder";
-    public static final String EMAIL_ID = "emailID";
+    public static final String EMAIL_ID = "emailId";
     public static final String EMAIL_INDEX = "emailIndex";
     public static final String ATTACHMENT_INDEX = "attachmentIndex";
     public static final String CONNECTION = "connection";
@@ -80,6 +80,7 @@ public final class EmailConstants {
     // Default email configuration values
     public static final String DEFAULT_SOCKETFACTORY_FALLBACK = "false";
     public static final String DEFAULT_FOLDER = "INBOX";
+    public static final String ALL_FOLDER = "*";
     public static final int DEFAULT_OFFSET = 0;
     public static final int DEFAULT_LIMIT = -1;
     // Flags
@@ -87,6 +88,10 @@ public final class EmailConstants {
     public static final String FLAG_ANSWERED = "answered";
     public static final String FLAG_DELETED = "deleted";
     public static final String FLAG_RECENT = "recent";
+
+    //Test Connections
+    public static final String IS_VALID_CONNECTION = "isValidConnection";
+    public static final String ERROR_MESSAGE = "errorMessage";
 
     private EmailConstants() {
 
