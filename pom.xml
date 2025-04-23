@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wso2.integration.connector</groupId>
     <artifactId>mi-connector-email</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>WSO2 Carbon - Connector For email</name>
     <url>http://wso2.org</url>
@@ -224,7 +224,7 @@
         <connection>scm:git:https://github.com/wso2-extensions/esb-connector-email</connection>
         <url>https://github.com/wso2-extensions/esb-connector-email.git</url>
         <developerConnection>scm:git:https://github.com/wso2-extensions/esb-connector-email</developerConnection>
-        <tag>v2.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
     <build>
         <plugins>
