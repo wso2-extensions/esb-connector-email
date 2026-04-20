@@ -99,8 +99,7 @@ public class OAuthUtils {
         String clientSecret = oAuthConfig.getClientSecret();
         String refreshToken = oAuthConfig.getRefreshToken();
         String tokenUrl = oAuthConfig.getTokenUrl();
-        if (StringUtils.isBlank(clientId) || StringUtils.isBlank(clientSecret) ||
-                StringUtils.isBlank(refreshToken) || StringUtils.isBlank(tokenUrl)) {
+        if (StringUtils.isBlank(clientId) || StringUtils.isBlank(refreshToken) || StringUtils.isBlank(tokenUrl)) {
             throw new EmailConnectionException("Invalid configurations provided for authorization code grant type.");
         }
         return new AuthorizationCodeHandler(userName, clientId, clientSecret, refreshToken, tokenUrl,
