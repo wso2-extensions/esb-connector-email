@@ -241,7 +241,12 @@
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
+              "helpTip": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)",
+              "enableCondition": [
+                {
+                  "grantType": "AUTHORIZATION_CODE"
+                }
+              ]
             }
           },
           {
@@ -263,7 +268,12 @@
               "inputType": "stringOrExpression",
               "defaultValue": "",
               "required": "false",
-              "helpTip": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
+              "helpTip": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)",
+              "enableCondition": [
+                {
+                  "grantType": "CLIENT_CREDENTIALS"
+                }
+              ]
             }
           }
         ]
