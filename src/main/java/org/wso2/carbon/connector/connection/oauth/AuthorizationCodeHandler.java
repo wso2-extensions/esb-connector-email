@@ -17,6 +17,8 @@
 
 package org.wso2.carbon.connector.connection.oauth;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This class is used to handle Authorization code grant oauth.
  */
@@ -32,9 +34,12 @@ public class AuthorizationCodeHandler extends OAuthHandler {
 
     @Override
     protected String buildTokenRequestPayload() {
-        return OAuthConstants.REFRESH_TOKEN_GRANT_TYPE +
+        String payload = OAuthConstants.REFRESH_TOKEN_GRANT_TYPE +
                 OAuthConstants.PARAM_CLIENT_ID + getClientId() +
-                OAuthConstants.PARAM_CLIENT_SECRET + getClientSecret() +
                 OAuthConstants.PARAM_REFRESH_TOKEN + refreshToken;
+        if (StringUtils.isNotBlank(getClientSecret())) {
+            payload += OAuthConstants.PARAM_CLIENT_SECRET + getClientSecret();
+        }
+        return payload;
     }
 }
