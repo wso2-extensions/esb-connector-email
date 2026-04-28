@@ -16,71 +16,22 @@
     ],
     "releases": [
         {
-            "tagName": "v2.0.2",
+            "tagName": "v2.0.3",
             "products": [
                 "MI 4.4.0",
                 "MI 4.5.0"
             ],
             "operations": [
                 {
-                    "name": "getEmailAttachment",
-                    "description": "Get Email Attachment",
-                    "params": [
-                        {
-                            "name": "emailId",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Index of the email to be retrieved in the email response"
-                        },
-                        {
-                            "name": "folder",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "Inbox",
-                            "description": "Folder to be searched for the email"
-                        },
-                        {
-                            "name": "attachmentIndex",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "0",
-                            "description": "Index of the attachment to be retrieved in the email response"
-                        },
-                        {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned"
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
-                {
-                    "name": "markAsRead",
-                    "description": "Mark As Read",
+                    "name": "expungeFolder",
+                    "description": "Expunge Folder",
                     "params": [
                         {
                             "name": "folder",
                             "type": "stringOrExpression",
                             "required": false,
                             "defaultValue": "Inbox",
-                            "description": "Name of the Mailbox folder to retrieve emails from"
-                        },
-                        {
-                            "name": "emailId",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Email ID Number of the email to mark as read"
+                            "description": "Name of the mailbox folder where the emails with the DELETED flag are scheduled to be permanently deleted"
                         },
                         {
                             "name": "responseVariable",
@@ -193,6 +144,111 @@
                             "required": false,
                             "defaultValue": "[]",
                             "description": "Array of comma separated inline images that should be embedded inline to email body"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned"
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "markAsRead",
+                    "description": "Mark As Read",
+                    "params": [
+                        {
+                            "name": "folder",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "Inbox",
+                            "description": "Name of the Mailbox folder to retrieve emails from"
+                        },
+                        {
+                            "name": "emailId",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Email ID Number of the email to mark as read"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned"
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "delete",
+                    "description": "Delete Email",
+                    "params": [
+                        {
+                            "name": "folder",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "Inbox",
+                            "description": "Name of the Mailbox folder to retrieve emails from"
+                        },
+                        {
+                            "name": "emailId",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Email ID Number of the email to delete"
+                        },
+                        {
+                            "name": "responseVariable",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Name of the variable to which the output of the operation should be assigned"
+                        },
+                        {
+                            "name": "overwriteBody",
+                            "type": "checkbox",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
+                        }
+                    ],
+                    "isHidden": false
+                },
+                {
+                    "name": "getEmailBody",
+                    "description": "Get Email Body",
+                    "params": [
+                        {
+                            "name": "emailId",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Index of the email to be retrieved in the email response"
+                        },
+                        {
+                            "name": "folder",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "Inbox",
+                            "description": "Folder to be searched for the email"
                         },
                         {
                             "name": "responseVariable",
@@ -331,41 +387,6 @@
                     "isHidden": false
                 },
                 {
-                    "name": "delete",
-                    "description": "Delete Email",
-                    "params": [
-                        {
-                            "name": "folder",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "Inbox",
-                            "description": "Name of the Mailbox folder to retrieve emails from"
-                        },
-                        {
-                            "name": "emailId",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Email ID Number of the email to delete"
-                        },
-                        {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned"
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
-                {
                     "name": "markAsDelete",
                     "description": "Mark As Delete",
                     "params": [
@@ -401,8 +422,8 @@
                     "isHidden": false
                 },
                 {
-                    "name": "getEmailBody",
-                    "description": "Get Email Body",
+                    "name": "getEmailAttachment",
+                    "description": "Get Email Attachment",
                     "params": [
                         {
                             "name": "emailId",
@@ -419,32 +440,11 @@
                             "description": "Folder to be searched for the email"
                         },
                         {
-                            "name": "responseVariable",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Name of the variable to which the output of the operation should be assigned"
-                        },
-                        {
-                            "name": "overwriteBody",
-                            "type": "checkbox",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Replace the Message Body in Message Context with the output of the operation (This will remove the payload from the above variable)."
-                        }
-                    ],
-                    "isHidden": false
-                },
-                {
-                    "name": "expungeFolder",
-                    "description": "Expunge Folder",
-                    "params": [
-                        {
-                            "name": "folder",
+                            "name": "attachmentIndex",
                             "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "Inbox",
-                            "description": "Name of the mailbox folder where the emails with the DELETED flag are scheduled to be permanently deleted"
+                            "required": true,
+                            "defaultValue": "0",
+                            "description": "Index of the attachment to be retrieved in the email response"
                         },
                         {
                             "name": "responseVariable",
@@ -663,6 +663,270 @@
                             "required": false,
                             "defaultValue": "",
                             "description": "Comma separated string of Cipher Suites"
+                        },
+                        {
+                            "name": "maxActiveConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of active connections in the pool"
+                        },
+                        {
+                            "name": "maxIdleConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of idle connections in the pool"
+                        },
+                        {
+                            "name": "maxWaitTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum time to wait for a pooled component to become available"
+                        },
+                        {
+                            "name": "minEvictionTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
+                        },
+                        {
+                            "name": "evictionCheckInterval",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of milliseconds between runs of the object evictor"
+                        },
+                        {
+                            "name": "exhaustedAction",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The behavior of the pool when the pool is exhausted"
+                        }
+                    ]
+                },
+                {
+                    "name": "IMAP",
+                    "description": "IMAP Connection",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "EMAIL_CONNECTION_1",
+                            "description": "The name for the email connection"
+                        },
+                        {
+                            "name": "host",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Host name of the mail server"
+                        },
+                        {
+                            "name": "port",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The port number of the mail server"
+                        },
+                        {
+                            "name": "username",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Username used to connect with the mail server"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Password to connect with the mail server"
+                        },
+                        {
+                            "name": "readTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket read timeout value"
+                        },
+                        {
+                            "name": "connectionTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket connection timeout value"
+                        },
+                        {
+                            "name": "writeTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket write timeout value"
+                        },
+                        {
+                            "name": "maxActiveConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of active connections in the pool"
+                        },
+                        {
+                            "name": "maxIdleConnections",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum number of idle connections in the pool"
+                        },
+                        {
+                            "name": "maxWaitTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Maximum time to wait for a pooled component to become available"
+                        },
+                        {
+                            "name": "minEvictionTime",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
+                        },
+                        {
+                            "name": "evictionCheckInterval",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The number of milliseconds between runs of the object evictor"
+                        },
+                        {
+                            "name": "exhaustedAction",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The behavior of the pool when the pool is exhausted"
+                        },
+                        {
+                            "name": "enableOAuth2",
+                            "type": "booleanOrExpression",
+                            "required": false,
+                            "defaultValue": "false",
+                            "description": "Whether to enable OAuth2 Authentication"
+                        },
+                        {
+                            "name": "grantType",
+                            "type": "comboOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Grant type to generate access token Supported values: AUTHORIZATION_CODE, CLIENT_CREDENTIALS"
+                        },
+                        {
+                            "name": "clientId",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Value of the Client ID you obtained when you register your application"
+                        },
+                        {
+                            "name": "clientSecret",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Value of the Client Secret you obtained when you register your application"
+                        },
+                        {
+                            "name": "refreshToken",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
+                        },
+                        {
+                            "name": "tokenUrl",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The token endpoint URL to generate access token"
+                        },
+                        {
+                            "name": "scope",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
+                        }
+                    ]
+                },
+                {
+                    "name": "SMTP",
+                    "description": "SMTP Connection",
+                    "params": [
+                        {
+                            "name": "connectionName",
+                            "type": "string",
+                            "required": true,
+                            "defaultValue": "EMAIL_CONNECTION_1",
+                            "description": "The name for the email connection"
+                        },
+                        {
+                            "name": "host",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "Host name of the mail server"
+                        },
+                        {
+                            "name": "port",
+                            "type": "stringOrExpression",
+                            "required": true,
+                            "defaultValue": "",
+                            "description": "The port number of the mail server"
+                        },
+                        {
+                            "name": "requireAuthentication",
+                            "type": "booleanOrExpression",
+                            "required": true,
+                            "defaultValue": "true",
+                            "description": "Whether authentication is required to connect with SMTP server"
+                        },
+                        {
+                            "name": "username",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Username used to connect with the mail server"
+                        },
+                        {
+                            "name": "password",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "Password to connect with the mail server"
+                        },
+                        {
+                            "name": "readTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket read timeout value"
+                        },
+                        {
+                            "name": "connectionTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket connection timeout value"
+                        },
+                        {
+                            "name": "writeTimeout",
+                            "type": "stringOrExpression",
+                            "required": false,
+                            "defaultValue": "",
+                            "description": "The socket write timeout value"
                         },
                         {
                             "name": "maxActiveConnections",
@@ -1081,319 +1345,6 @@
                             "required": false,
                             "defaultValue": "",
                             "description": "The behavior of the pool when the pool is exhausted"
-                        }
-                    ]
-                },
-                {
-                    "name": "SMTP",
-                    "description": "SMTP Connection",
-                    "params": [
-                        {
-                            "name": "connectionName",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "EMAIL_CONNECTION_1",
-                            "description": "The name for the email connection"
-                        },
-                        {
-                            "name": "host",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Host name of the mail server"
-                        },
-                        {
-                            "name": "port",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The port number of the mail server"
-                        },
-                        {
-                            "name": "requireAuthentication",
-                            "type": "booleanOrExpression",
-                            "required": true,
-                            "defaultValue": "true",
-                            "description": "Whether authentication is required to connect with SMTP server"
-                        },
-                        {
-                            "name": "username",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Username used to connect with the mail server"
-                        },
-                        {
-                            "name": "password",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Password to connect with the mail server"
-                        },
-                        {
-                            "name": "enableOAuth2",
-                            "type": "booleanOrExpression",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Whether to enable OAuth2 Authentication"
-                        },
-                        {
-                            "name": "grantType",
-                            "type": "comboOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Grant type to generate access token Supported values: AUTHORIZATION_CODE, CLIENT_CREDENTIALS"
-                        },
-                        {
-                            "name": "clientId",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Value of the Client ID you obtained when you register your application"
-                        },
-                        {
-                            "name": "clientSecret",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Value of the Client Secret you obtained when you register your application"
-                        },
-                        {
-                            "name": "refreshToken",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
-                        },
-                        {
-                            "name": "tokenUrl",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The token endpoint URL to generate access token"
-                        },
-                        {
-                            "name": "scope",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
-                        },
-                        {
-                            "name": "readTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket read timeout value"
-                        },
-                        {
-                            "name": "connectionTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket connection timeout value"
-                        },
-                        {
-                            "name": "writeTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket write timeout value"
-                        },
-                        {
-                            "name": "maxActiveConnections",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum number of active connections in the pool"
-                        },
-                        {
-                            "name": "maxIdleConnections",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum number of idle connections in the pool"
-                        },
-                        {
-                            "name": "maxWaitTime",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum time to wait for a pooled component to become available"
-                        },
-                        {
-                            "name": "minEvictionTime",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
-                        },
-                        {
-                            "name": "evictionCheckInterval",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The number of milliseconds between runs of the object evictor"
-                        },
-                        {
-                            "name": "exhaustedAction",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The behavior of the pool when the pool is exhausted"
-                        }
-                    ]
-                },
-                {
-                    "name": "IMAP",
-                    "description": "IMAP Connection",
-                    "params": [
-                        {
-                            "name": "connectionName",
-                            "type": "string",
-                            "required": true,
-                            "defaultValue": "EMAIL_CONNECTION_1",
-                            "description": "The name for the email connection"
-                        },
-                        {
-                            "name": "host",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Host name of the mail server"
-                        },
-                        {
-                            "name": "port",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "The port number of the mail server"
-                        },
-                        {
-                            "name": "username",
-                            "type": "stringOrExpression",
-                            "required": true,
-                            "defaultValue": "",
-                            "description": "Username used to connect with the mail server"
-                        },
-                        {
-                            "name": "password",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Password to connect with the mail server"
-                        },
-                        {
-                            "name": "readTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket read timeout value"
-                        },
-                        {
-                            "name": "connectionTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket connection timeout value"
-                        },
-                        {
-                            "name": "writeTimeout",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The socket write timeout value"
-                        },
-                        {
-                            "name": "maxActiveConnections",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum number of active connections in the pool"
-                        },
-                        {
-                            "name": "maxIdleConnections",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum number of idle connections in the pool"
-                        },
-                        {
-                            "name": "maxWaitTime",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Maximum time to wait for a pooled component to become available"
-                        },
-                        {
-                            "name": "minEvictionTime",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The minimum amount of time an object may sit idle in the pool before it is eligible for eviction"
-                        },
-                        {
-                            "name": "evictionCheckInterval",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The number of milliseconds between runs of the object evictor"
-                        },
-                        {
-                            "name": "exhaustedAction",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The behavior of the pool when the pool is exhausted"
-                        },
-                        {
-                            "name": "enableOAuth2",
-                            "type": "booleanOrExpression",
-                            "required": false,
-                            "defaultValue": "false",
-                            "description": "Whether to enable OAuth2 Authentication"
-                        },
-                        {
-                            "name": "grantType",
-                            "type": "comboOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Grant type to generate access token Supported values: AUTHORIZATION_CODE, CLIENT_CREDENTIALS"
-                        },
-                        {
-                            "name": "clientId",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Value of the Client ID you obtained when you register your application"
-                        },
-                        {
-                            "name": "clientSecret",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Value of the Client Secret you obtained when you register your application"
-                        },
-                        {
-                            "name": "refreshToken",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The refresh token generated (This is applicable for grant type AUTHORIZATION_CODE)"
-                        },
-                        {
-                            "name": "tokenUrl",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "The token endpoint URL to generate access token"
-                        },
-                        {
-                            "name": "scope",
-                            "type": "stringOrExpression",
-                            "required": false,
-                            "defaultValue": "",
-                            "description": "Scope (This is applicable for grant type CLIENT_CREDENTIALS)"
                         }
                     ]
                 }
